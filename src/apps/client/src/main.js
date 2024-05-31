@@ -21,7 +21,7 @@ const monoConfig = parse(
 const serverURL = `http://${monoConfig.server.host}:${monoConfig.server.port}`; // http://localhost:8000
 axios.defaults.baseURL = serverURL;
 
-const socket = sioClient(serverURL, { transports: ["websocket"] });
+const sio = sioClient(serverURL, { transports: ["websocket"] });
 
 /**
  * app state
@@ -114,7 +114,7 @@ subscribeKey(ctx, "navigatedToReels", (v) => {
         ctx.currentReel = { ...ctx.currentReel, ...data };
 
         // Let the server know that we are watching this reel; handled in server/src/app.py
-        socket.emit("loaded_new_reel", data);
+        sio.emit("loaded_new_reel", data);
 
         win.webContents.removeListener(
           "did-finish-load",
@@ -126,7 +126,7 @@ subscribeKey(ctx, "navigatedToReels", (v) => {
 });
 
 // listen for 'switch_to_new_reel_at_time' message from server (server/src/app.py)
-socket.on("switch_to_new_reel_at_time", ({ reelId, time }) => {
+sio.on("switch_to_new_reel_at_time", ({ reelId, time }) => {
   console.info(
     `Python told me to swipe away from reel ${reelId} & get a new one at time: ${time}...`
   );
