@@ -6,7 +6,7 @@
 
 - python & pip (tested w/ v3.11.5 but any 3.x should work to get started)
 - [node & npm](https://nodejs.org/)
-- [bun](https://bun.sh/) (optional; can use `npm` instead, which comes with node; tested w/ v1.1.10)
+- [bun](https://bun.sh/) (optional; can use `npm` instead, which comes with node; I tested w/ Bun v1.1.10)
 
 **NOTE:** bun runs faster than node & npm, but native support for Windows is in beta & may not work as expected there. Would recommend using bun on Linux, macOS or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) if on Windows.
 
