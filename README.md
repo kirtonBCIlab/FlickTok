@@ -30,7 +30,11 @@ bun dev # or `npm run dev` (runs the app)
   - The Electron app is a simple browser window that loads the Instagram login page, logs in, and then navigates to the Instagram Reels page.
   - The Python server communicates with the Electron app via websockets, detects when a reel is loaded, and picks a random time to switch to a new reel; it then sends that time to the Electron app, which accordingly scrolls to the next reel at the given time.
 - Should look something like this:
-  ![](temp/demo.mp4)
+  
+
+https://github.com/arazzz/fliktok_testing/assets/33709341/339d37cf-ce5e-4393-af55-b33d6c2f1d81
+
+
 
 ## Details
 
