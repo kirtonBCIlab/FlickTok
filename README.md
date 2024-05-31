@@ -19,7 +19,7 @@ bun dev # or `npm run dev` (runs the app)
 ```
 
 - Can also use `bun start` (or `npm run start`) to start the app without watching for changes (hot-reloading enabled by default).
-- Running the app will simultaneously start the Electron app and the Python server. The real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) library for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/).
+- Running the app will simultaneously start the Electron app and the Python server. The real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) libraries for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/).
 - To stop the app, press `Ctrl+C` in the terminal.
 
 ## Overview
