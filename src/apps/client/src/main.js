@@ -24,7 +24,7 @@ axios.defaults.baseURL = serverURL;
 const socket = sioClient(serverURL, { transports: ["websocket"] });
 
 /**
- * app state management
+ * app state
  * */
 let win; // main window
 const ctx = proxy({
@@ -34,7 +34,7 @@ const ctx = proxy({
     duration: null,
     currentTime: null,
   },
-}); // global state
+}); // can subscribe to changes in ctx
 
 /**
  * electron main window handling
@@ -47,21 +47,25 @@ app.on("ready", () => {
     height: 600,
     webPreferences: {
       preload: join(__dirname, "preload.mjs"),
-      nodeIntegration: true,
+      sandbox: false,
+      contextIsolation: true,
     },
   });
 
   // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
-  // login if not already logged in; will redirect to main page
+  // login; will redirect to main page after login or if already logged in
   win.loadURL("https://www.instagram.com/accounts/login/");
 
   win.webContents.once("did-navigate", (_event, url) => {
+    console.info(
+      `Navigated to: ${url}; navigatedToReels: ${ctx.navigatedToReels}...`
+    );
     if (url === "https://www.instagram.com/" && !ctx.navigatedToReels) {
       // on main page (after login) --> navigate to reels
       console.info(`Navigated to: ${url}; Login successful...`);
       console.info("Navigating to reels...");
-      win.webContents.once("did-finish-load", () =>
+      win.webContents.on("did-finish-load", () =>
         win.webContents.send("login-success")
       ); // handled in preload.js
     }
@@ -121,6 +125,7 @@ subscribeKey(ctx, "navigatedToReels", (v) => {
   });
 });
 
+// listen for 'switch_to_new_reel_at_time' message from server (server/src/app.py)
 socket.on("switch_to_new_reel_at_time", ({ reelId, time }) => {
   console.info(
     `Python told me to swipe away from reel ${reelId} & get a new one at time: ${time}...`
