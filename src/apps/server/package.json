@@ -1,0 +1,13 @@
+{
+  "name": "server",
+  "private": true,
+  "scripts": {
+    "postinstall": "pip3 install poetry && poetry config virtualenvs.in-project true && poetry install",
+    "dev": "nodemon --watch ./src --ext py,js,ts,jsx,tsx,json,yml,yaml --exec \"poetry run dev\"",
+    "start": "poetry run start",
+    "build": "poetry run build"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.2"
+  }
+}

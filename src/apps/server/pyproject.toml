@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "server"
+version = "0.0.1"
+description = ""
+authors = ["arazzz"]
+packages = [{include = "server", from = "../"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.0.0"
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+python-socketio = "^5.11.2"
+pyyaml = "^6.0.1"
+rich = "^13.7.1"
+
+numpy = "^1.26.4"
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = "server.main:start"
+start = "server.main:start"
