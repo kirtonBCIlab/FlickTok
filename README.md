@@ -27,7 +27,7 @@ bun dev # or `npm run dev` (runs the app)
 ![overview](https://github.com/arazzz/fliktok_testing/assets/33709341/81a025d1-3cd1-42d2-a421-50ccbac643c5)
 
 - The app consists of two parts: an Electron app (apps/client) and a Python server (apps/server).
-  - The Electron app is a simple browser window that loads the Instagram login page, logs in, and then navigates to the Instagram Reels page.
+  - The Electron app is a simple browser window that loads the Instagram login page; after user logs in, it then navigates to the Instagram Reels page.
   - The Python server communicates with the Electron app via websockets, detects when a reel is loaded, and picks a random time to switch to a new reel; it then sends that time to the Electron app, which accordingly scrolls to the next reel at the given time.
 - Should look something like this:
 
