@@ -25,6 +25,7 @@ bun dev # or `npm run dev` (runs the app)
 ## Overview
 
 ![overview](https://github.com/arazzz/fliktok_testing/assets/33709341/81a025d1-3cd1-42d2-a421-50ccbac643c5)
+![overview](https://github.com/arazzz/fliktok_testing/assets/33709341/81a025d1-3cd1-42d2-a421-50ccbac643c5)
 
 - The app consists of two parts: an Electron app (apps/client) and a Python server (apps/server).
   - The Electron app is a simple browser window that loads the Instagram login page, logs in, and then navigates to the Instagram Reels page.
