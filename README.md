@@ -30,11 +30,8 @@ bun dev # or `npm run dev` (runs the app)
   - The Electron app is a simple browser window that loads the Instagram login page, logs in, and then navigates to the Instagram Reels page.
   - The Python server communicates with the Electron app via websockets, detects when a reel is loaded, and picks a random time to switch to a new reel; it then sends that time to the Electron app, which accordingly scrolls to the next reel at the given time.
 - Should look something like this:
-  
 
 https://github.com/arazzz/fliktok_testing/assets/33709341/339d37cf-ce5e-4393-af55-b33d6c2f1d81
-
-
 
 ## Details
 
@@ -46,11 +43,11 @@ https://github.com/arazzz/fliktok_testing/assets/33709341/339d37cf-ce5e-4393-af5
     - `poetry shell`: Activates the local virtual environment (similar to `source .venv/bin/activate`).
     - `poetry run dev`: Runs the `dev` script specified in `pyproject.toml` file, using the local virtual environment.
   2. The `dev` script in `src/apps/client/src/main.js` folder starts the main Electron app using [Electron](https://www.electronjs.org/). The app is a simple browser window that loads the [Instagram login](https://www.instagram.com/accounts/login/) page (redirects to the [Instagram feed](https://www.instagram.com/) after login / if already logged in). This is also started using [nodemon](https://github.com/remy/nodemon) in dev mode, and any changes to the JavaScript code will trigger a restart of the Electron app. Once the Instagram feed is loaded, the following will occur:
-     1. `main.js` will let `preload.js` know that the app is ready to receive messages (the `login-success` message) by sending it to the `preload.js` script via Electron's IPC (inter-process communication) system.
-     2. `preload.js` will hear the `login-success` message from `main.js`, redirect to the [Reels page](https://www.instagram.com/reels/), and send the currently playing reel's info (ID, duration, etc.) to `main.js` via the `reels-loaded` event (again via IPC).
-     3. `main.js` will hear the `reels-loaded` event from `preload.js`, and send the reel info to the Python server (in `app.py`) via a websocket connection.
-     4. `app.py` will hear the `reels-loaded` and use the given reel info (duration, specifically) to pick a random time to switch to a new reel (see `async def loaded_new_reel(sid, data)` in `app.py`). It will then send a message back to `main.js` via the websocket connection, with the time that it picked (in seconds), emitting the `switch-to-new-reel-at-time` message.
-     5. `main.js` will hear the `switch-to-new-reel-at-time` message from `app.py`, and give `preload.js` the time that was picked. `preload.js` will then wait for that time to pass, and once it does, it will click scroll to the next reel — which in turn will trigger the `reels-loaded` event (in #3 above) again — and so on.
+     - `main.js` will let `preload.js` know that the app is ready to receive messages (the `login-success` message) by sending it to the `preload.js` script via Electron's IPC (inter-process communication) system.
+     - `preload.js` will hear the `login-success` message from `main.js`, redirect to the [Reels page](https://www.instagram.com/reels/), and send the currently playing reel's info (ID, duration, etc.) to `main.js` via the `reels-loaded` event (again via IPC).
+     - `main.js` will hear the `reels-loaded` event from `preload.js`, and send the reel info to the Python server (in `app.py`) via a websocket connection.
+     - `app.py` will hear the `reels-loaded` and use the given reel info (duration, specifically) to pick a random time to switch to a new reel (see `async def loaded_new_reel(sid, data)` in `app.py`). It will then send a message back to `main.js` via the websocket connection, with the time that it picked (in seconds), emitting the `switch-to-new-reel-at-time` message.
+     - `main.js` will hear the `switch-to-new-reel-at-time` message from `app.py`, and give `preload.js` the time that was picked. `preload.js` will then wait for that time to pass, and once it does, it will click scroll to the next reel — which in turn will trigger the `reels-loaded` event (in #3 above) again — and so on.
 
 **Altogether, this app creates a simple loop where the Python server picks a random time to switch reels, and the Electron app scrolls to the next reel at that time.**
 
