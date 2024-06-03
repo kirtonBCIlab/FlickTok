@@ -41,9 +41,8 @@ class Api:
 def preload(window) -> None:
     helpers_js = open("helpers.js", "r").read()
     preload_js = open("preload.js", "r").read()
-    print(helpers_js)
     window.evaluate_js(helpers_js)
-    # window.evaluate_js(preload_js)
+    window.evaluate_js(preload_js)
 
 
 def start() -> None:

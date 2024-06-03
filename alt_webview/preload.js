@@ -1,3 +1,10 @@
+const isVideoPlaying = window.isVideoPlaying;
+const getCurrentReel = window.getCurrentReel;
+const getCurrentReelAsync = window.getCurrentReelAsync;
+const scrollToNextReel = window.scrollToNextReel;
+const createUIInfoBox = window.createUIInfoBox;
+const getScrollParent = window.getScrollParent;
+
 const getCurrentReelInfoRequest = async () => {
   let currentVideo = await getCurrentReelAsync();
   if (!currentVideo) console.warn("No video playing...");
