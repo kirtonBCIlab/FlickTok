@@ -6,6 +6,7 @@ cffi==1.16.0
     # via clr-loader
 clr-loader==0.2.6
     # via pythonnet
+numpy==1.26.4
 proxy-tools==0.1.0
     # via pywebview
 pycparser==2.22
