@@ -5,6 +5,7 @@
  */
 import fs from "fs";
 import axios from "axios";
+import waitOn from "wait-on";
 import { app, BrowserWindow, ipcMain } from "electron";
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
@@ -19,6 +20,8 @@ const monoConfig = parse(
   fs.readFileSync(join(__dirname, "../../../packages/config/base.yml"), "utf8")
 );
 const serverURL = `http://${monoConfig.server.host}:${monoConfig.server.port}`; // http://localhost:8000
+const waitOnEndPoint =
+  serverURL.replace("http://", "http-get://") + "/api/healthcheck";
 axios.defaults.baseURL = serverURL;
 
 const sio = sioClient(serverURL, { transports: ["websocket"] });
@@ -28,6 +31,7 @@ const sio = sioClient(serverURL, { transports: ["websocket"] });
  * */
 let win; // main window
 const ctx = proxy({
+  serverLoaded: false,
   navigatedToReels: false,
   currentReel: {
     id: null,
@@ -45,6 +49,7 @@ app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false,
     webPreferences: {
       preload: join(__dirname, "preload.mjs"),
       sandbox: false,
@@ -52,26 +57,36 @@ app.on("ready", () => {
     },
   });
 
-  // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  // wait for server to be ready
+  waitOn({ resources: [waitOnEndPoint] })
+    .then(() => (ctx.serverLoaded = true))
+    .catch((err) => console.error(" Error while waiting on resources...", err));
 
-  // login; will redirect to main page after login or if already logged in
-  win.loadURL("https://www.instagram.com/accounts/login/");
+  subscribeKey(ctx, "serverLoaded", (v) => {
+    if (!v) return;
 
-  win.webContents.once("did-navigate", (_event, url) => {
-    console.info(
-      `Navigated to: ${url}; navigatedToReels: ${ctx.navigatedToReels}...`
-    );
-    if (url === "https://www.instagram.com/" && !ctx.navigatedToReels) {
-      // on main page (after login) --> navigate to reels
-      console.info(`Navigated to: ${url}; Login successful...`);
-      console.info("Navigating to reels...");
-      win.webContents.on("did-finish-load", () =>
-        win.webContents.send("login-success")
-      ); // handled in preload.js
-    }
+    // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+
+    // login; will redirect to main page after login or if already logged in
+    win.loadURL("https://www.instagram.com/accounts/login/");
+
+    win.webContents.once("did-navigate", (_event, url) => {
+      console.info(
+        `Navigated to: ${url}; navigatedToReels: ${ctx.navigatedToReels}...`
+      );
+      if (url === "https://www.instagram.com/" && !ctx.navigatedToReels) {
+        // on main page (after login) --> navigate to reels
+        console.info(`Navigated to: ${url}; Login successful...`);
+        console.info("Navigating to reels...");
+        win.webContents.on("did-finish-load", () =>
+          win.webContents.send("login-success")
+        ); // handled in preload.js
+      }
+    });
+
+    win.once("ready-to-show", () => win.show());
+    win.on("closed", () => (win = null));
   });
-
-  win.on("closed", () => (win = null));
 });
 app.on("window-all-closed", () =>
   process.platform !== "darwin" ? app.quit() : null
