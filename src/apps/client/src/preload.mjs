@@ -18,8 +18,8 @@ window.onload = () => {
     console.info("Login successful. Navigating to reels...");
     if (!window.location.href.includes("reels")) {
       window.location.href = "https://www.instagram.com/reels/"; // go to reels page
-      event.sender.send("reels-loaded"); // handled in main.js
     }
+    event.sender.send("reels-loaded"); // handled in main.js
   });
   // endregion
 
