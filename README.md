@@ -1,4 +1,4 @@
-### [Electron](https://www.electronjs.org/) x [Python](https://www.python.org/) [Monorepo](https://turbo.build/) Example for FlikTok Dev Spike
+### [Electron](https://www.electronjs.org/) x [Python](https://www.python.org/) [Monorepo](https://turbo.build/) Example for FlickTok Dev Spike
 
 ---
 
