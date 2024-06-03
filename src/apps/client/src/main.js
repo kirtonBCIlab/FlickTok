@@ -67,22 +67,29 @@ app.on("ready", () => {
 
     // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
-    // login; will redirect to main page after login or if already logged in
-    win.loadURL("https://www.instagram.com/accounts/login/");
+    if (monoConfig.client.skipLogin === true) {
+      win.loadURL("https://www.instagram.com/reels/");
+      win.webContents.once("did-finish-load", () =>
+        win.webContents.send("login-success")
+      ); // handled in preload.js
+    } else {
+      // login; will redirect to main page after login or if already logged in
+      win.loadURL("https://www.instagram.com/accounts/login/");
 
-    win.webContents.once("did-navigate", (_event, url) => {
-      console.info(
-        `Navigated to: ${url}; navigatedToReels: ${ctx.navigatedToReels}...`
-      );
-      if (url === "https://www.instagram.com/" && !ctx.navigatedToReels) {
-        // on main page (after login) --> navigate to reels
-        console.info(`Navigated to: ${url}; Login successful...`);
-        console.info("Navigating to reels...");
-        win.webContents.on("did-finish-load", () =>
-          win.webContents.send("login-success")
-        ); // handled in preload.js
-      }
-    });
+      win.webContents.once("did-navigate", (_event, url) => {
+        console.info(
+          `Navigated to: ${url}; navigatedToReels: ${ctx.navigatedToReels}...`
+        );
+        if (url === "https://www.instagram.com/" && !ctx.navigatedToReels) {
+          // on main page (after login) --> navigate to reels
+          console.info(`Navigated to: ${url}; Login successful...`);
+          console.info("Navigating to reels...");
+          win.webContents.on("did-finish-load", () =>
+            win.webContents.send("login-success")
+          ); // handled in preload.js
+        }
+      });
+    }
 
     win.once("ready-to-show", () => win.show());
     win.on("closed", () => (win = null));
