@@ -54,5 +54,7 @@ window.onload = () => {
   if (!window.location.href.includes("reels")) {
     window.location.href = "https://www.instagram.com/reels/"; // go to reels page
     pywebview.api.inform("reels-loaded"); // inform main.py that reels page is loaded
+  } else if (window.location.href.includes("reels")) {
+    pywebview.api.inform("reels-loaded");
   }
 };
