@@ -17,11 +17,14 @@ class Api:
     def dispatch(self, id, data=None):
         match id:
             case "reels-loaded":
+                print("Reels loaded...")
                 webview.windows[0].evaluate_js("getCurrentReelInfoRequest()")
             case "set-current-reel-info":
+                print("Setting current reel info...", data)
                 self.reelInfo = data
                 self.dispatch("loaded-new-reel")
             case "loaded_new_reel":
+                print("Loaded new reel...")
                 reelId, reel_duration, reel_current_time = (
                     self.reelInfo["id"],
                     self.reelInfo["duration"],
