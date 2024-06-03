@@ -117,3 +117,10 @@ const createUIInfoBox = ({ time }) => {
 
   return infoBox;
 };
+
+window.isVideoPlaying = isVideoPlaying;
+window.getCurrentReel = getCurrentReel;
+window.getCurrentReelAsync = getCurrentReelAsync;
+window.scrollToNextReel = scrollToNextReel;
+window.createUIInfoBox = createUIInfoBox;
+window.getScrollParent = getScrollParent;
