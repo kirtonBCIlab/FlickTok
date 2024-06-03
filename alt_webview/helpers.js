@@ -118,9 +118,32 @@ const createUIInfoBox = ({ time }) => {
   return infoBox;
 };
 
+const startUrlChangeTracking = () => {
+  let oldPushState = history.pushState;
+  history.pushState = function pushState() {
+    let ret = oldPushState.apply(this, arguments);
+    window.dispatchEvent(new Event("pushstate"));
+    window.dispatchEvent(new Event("locationchange"));
+    return ret;
+  };
+
+  let oldReplaceState = history.replaceState;
+  history.replaceState = function replaceState() {
+    let ret = oldReplaceState.apply(this, arguments);
+    window.dispatchEvent(new Event("replacestate"));
+    window.dispatchEvent(new Event("locationchange"));
+    return ret;
+  };
+
+  window.addEventListener("popstate", () => {
+    window.dispatchEvent(new Event("locationchange"));
+  });
+};
+
 window.isVideoPlaying = isVideoPlaying;
 window.getCurrentReel = getCurrentReel;
 window.getCurrentReelAsync = getCurrentReelAsync;
 window.scrollToNextReel = scrollToNextReel;
 window.createUIInfoBox = createUIInfoBox;
 window.getScrollParent = getScrollParent;
+window.startUrlChangeTracking = startUrlChangeTracking;

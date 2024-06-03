@@ -4,6 +4,9 @@ const getCurrentReelAsync = window.getCurrentReelAsync;
 const scrollToNextReel = window.scrollToNextReel;
 const createUIInfoBox = window.createUIInfoBox;
 const getScrollParent = window.getScrollParent;
+const startUrlChangeTracking = window.startUrlChangeTracking;
+
+startUrlChangeTracking();
 
 const getCurrentReelInfoRequest = async () => {
   let currentVideo = await getCurrentReelAsync();
@@ -48,13 +51,18 @@ const switchToNewReelAtTimeRequest = async ({ reelId, time }) => {
   currentVideo.addEventListener("timeupdate", scrollToNextReelAtTime, false);
 };
 
-window.onload = () => {
-  console.info("Preload script loaded..."); // these will be logged in the console of the browser window
+window.getCurrentReelInfoRequest = getCurrentReelInfoRequest;
+window.switchToNewReelAtTimeRequest = switchToNewReelAtTimeRequest;
 
-  if (!window.location.href.includes("reels")) {
-    window.location.href = "https://www.instagram.com/reels/"; // go to reels page
-    pywebview.api.inform("reels-loaded"); // inform main.py that reels page is loaded
-  } else if (window.location.href.includes("reels")) {
-    pywebview.api.inform("reels-loaded");
-  }
-};
+console.info("Preload script loaded..."); // these will be logged in the console of the browser window
+
+if (!window.location.href.includes("reels")) {
+  window.location.href = "https://www.instagram.com/reels/"; // go to reels page
+  pywebview.api.dispatch("reels-loaded"); // inform main.py that reels page is loaded
+} else if (window.location.href.includes("reels")) {
+  pywebview.api.dispatch("reels-loaded");
+}
+
+window.addEventListener("locationchange", function () {
+  pywebview.api.dispatch("url-changed", window.location.href);
+});
