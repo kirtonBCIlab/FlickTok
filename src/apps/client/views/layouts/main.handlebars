@@ -5,17 +5,13 @@
     <title>{{title}}</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
     />
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    {{! <div id="root"> }}
-    <header style="background-color: #ccc">Header</header>
-    <main style="background-color: #eee">
-      {{{body}}}
-    </main>
-    <footer style="background-color: #ccc">Footer</footer>
-    {{! </div> }}
+    {{! <main class="container"> }}
+    {{{body}}}
+    {{! </main> }}
   </body>
 </html>
