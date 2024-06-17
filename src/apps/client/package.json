@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.{js,cjs,mjs,ts,jsx,tsx}' --exec 'electron .'",
+    "dev": "nodemon --watch 'src/**/*.{js,cjs,mjs,ts,jsx,tsx}' --watch 'public/**/*.{html,css,js,jsx,tsx,ts}' --watch 'views/**/*.{html,css,js,jsx,tsx,ts,handlebars}' --exec 'electron .'",
     "start": "electron .",
     "build": "electron-builder"
   },
@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
     "lodash": "^4.17.21",
     "socket.io-client": "^4.7.5",
     "valtio": "^1.13.2",
