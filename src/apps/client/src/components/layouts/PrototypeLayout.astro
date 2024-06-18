@@ -1,0 +1,9 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+---
+
+<BaseLayout {...Astro.props}>
+  <slot name="header" class="sticky top-0 w-full bg-slate-700" />
+  <slot />
+  <slot name="footer" class="sticky bottom-0 w-full bg-slate-700" />
+</BaseLayout>

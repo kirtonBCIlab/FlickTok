@@ -15,6 +15,7 @@ pyyaml = "^6.0.1"
 rich = "^13.7.1"
 
 numpy = "^1.26.4"
+pylsl = "^1.16.2"
 [tool.poetry.dev-dependencies]
 
 [build-system]

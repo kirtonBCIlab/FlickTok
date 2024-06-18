@@ -1,30 +1,45 @@
 {
   "name": "client",
-  "main": "src/main.js",
-  "type": "module",
   "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "src/electron/main.js",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.{js,cjs,mjs,ts,jsx,tsx}' --watch 'public/**/*.{html,css,js,jsx,tsx,ts}' --watch 'views/**/*.{html,css,js,jsx,tsx,ts,handlebars}' --exec 'electron .'",
-    "start": "electron .",
-    "build": "electron-builder"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "electron": "^30.0.9",
-    "electron-builder": "^24.13.3",
-    "nodemon": "^3.1.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "dev": "bun run electron:serve",
+    "astro:dev": "astro dev",
+    "astro:start": "astro dev",
+    "astro:build": "astro build",
+    "astro:preview": "astro preview",
+    "astro": "bunx --bun astro",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none bun run astro:start\" \"bun run electron:start:nodemon\"",
+    "electron:build": "",
+    "electron:start": "electron .",
+    "electron:start:nodemon": "nodemon --watch src/electron --ext js,cjs,mjs,ts,jsx,tsx --exec \"electron .\""
   },
   "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "assert": "^2.1.0",
+    "astro": "^4.10.3",
     "axios": "^1.7.2",
-    "express": "^4.19.2",
-    "express-handlebars": "^7.1.2",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "daisyui": "^4.12.2",
+    "electron-util": "^0.18.1",
     "lodash": "^4.17.21",
+    "prettier": "^3.3.2",
     "socket.io-client": "^4.7.5",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss": "^3.4.4",
+    "tailwindcss-animate": "^1.0.7",
+    "use-double-click": "^1.0.5",
     "valtio": "^1.13.2",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "wait-on": "^7.2.0",
-    "yaml": "^2.4.2"
+    "yaml": "^2.4.5"
+  },
+  "devDependencies": {
+    "electron": "31.0.1",
+    "nodemon": "^3.1.3",
+    "electron-builder": "^24.13.3"
   }
 }

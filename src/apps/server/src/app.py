@@ -27,41 +27,18 @@ async def disconnect(sid):
     connected_clients.remove(sid)
 
 
-@sio.on("loaded_new_reel")  # called when the client emits the 'loaded_new_reel' event
+@sio.on("run-fes-test")  # called when the client emits the 'run-fes-test' event
 async def loaded_new_reel(sid, data):
-    """
-    Picks a random time within the current reel (capped at maximum of 7-10 seconds)
-    to switch to a new one, and sends that time to the client.
-
-    Args:
-        sid (str): The session ID of the client.
-        data (dict): The data sent by the client when emitting 'loaded_new_reel' event (in client/src/main.js).
-
-    Returns:
-        None
-    """
-    console.log(f"[purple]Client ({sid}) loaded new reel: {data}[/purple]")
-    reel_info = data  # data sent by the client (in client/src/main.js)
-    reelId, reel_duration, reel_current_time = (
-        reel_info["id"],
-        reel_info["duration"],
-        reel_info["currentTime"],
-    )
-    # Pick a random time in the middle of the reel to switch to a new reel
-    rand_break_time = np.random.uniform(
-        reel_current_time, reel_current_time + reel_duration
-    )
-    rand_break_time = min(
-        rand_break_time, np.random.uniform(7, 10)
-    )  # Cap the break time at ~7-10 seconds for now (some reels are terribly long)
-    await sio.emit(
-        "switch_to_new_reel_at_time",
-        {"reelId": reelId, "time": rand_break_time},
-        room=sid,
-    )
+    # console.log(f"[purple]Client ({sid}) sent data: {data}[/purple]")
+    console.log(f"[blue]Running FES test...[/blue]")
 
 
 # Healthcheck endpoint to verify the http server is running (not needed)
 @fastapp.get("/api/healthcheck")
 async def healthcheck():
     return {"status": "ok"}
+
+
+@fastapp.get("/api/simulate-headset")
+async def headset_simulator():
+    pass

@@ -15,6 +15,7 @@ import { io as sioClient } from "socket.io-client";
 import { parse } from "yaml";
 import Express from "express";
 import handlebars from "express-handlebars";
+import ViteExpress from "vite-express";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,7 +44,18 @@ expressApp.engine(
 expressApp.set("view engine", "handlebars");
 expressApp.set("views", join(__dirname, "../views"));
 expressApp.get("/", (req, res) => res.render("index"));
-expressApp.listen(monoConfig.client.port, monoConfig.client.host);
+const expressServer = expressApp.listen(
+  monoConfig.client.port,
+  monoConfig.client.host
+);
+ViteExpress.bind(expressApp, expressServer, async () => {
+  const { root, base, ...rest } = await ViteExpress.getViteConfig();
+  console.log(`Serving app from root ${root}`);
+  console.log(
+    `Server is listening at http://${monoConfig.client.host}:${monoConfig.client.port}${base}`
+  );
+  console.info(rest);
+});
 
 let win; // main window
 const ctx = proxy({
@@ -56,11 +68,6 @@ electronApp.on("ready", () => {
     width: 800,
     height: 600,
     show: false,
-    // webPreferences: {
-    //   preload: join(__dirname, "preload.mjs"),
-    //   sandbox: false,
-    //   contextIsolation: true,
-    // },
   });
 
   // wait for server to be ready before loading the client
