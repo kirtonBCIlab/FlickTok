@@ -2,10 +2,8 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "postinstall": "pip3 install poetry && poetry config virtualenvs.in-project true && poetry install",
-    "dev": "nodemon --watch ./src --ext py,js,ts,jsx,tsx,json,yml,yaml --exec \"poetry run dev\"",
-    "start": "poetry run start",
-    "build": "poetry run build"
+    "postinstall": "pip install uv && uv venv && source .venv/bin/activate && uv pip install -e .",
+    "dev": "nodemon --watch ./src --ext py,js,ts,jsx,tsx,json,yml,yaml --exec \"source .venv/bin/activate & python ./main.py\""
   },
   "dependencies": {
     "nodemon": "^3.1.2"
