@@ -9,11 +9,12 @@ def generate_simulated_eeg(store):
 
     terminate = False
 
-    def stop_simulator(signum, frame):
+    def stop_simulator():
         nonlocal terminate
         terminate = True
 
     store.subscribe("stop-simulator", stop_simulator)
+    # signal.signal(signal.SIGINT, stop_simulator)
 
     # This is what comes from an Emotiv EPOC+ headset LSL streamed via EmotivPro
     # Using a lower rate to be nice to network, the sim just sends dummy data so this shouldn't matter
@@ -56,6 +57,8 @@ def generate_simulated_eeg(store):
 
     outlet = StreamOutlet(stream_info)
 
+    published_to_store = False
+
     # Spew out random samples
     while True:
         sample = np.random.uniform(0.0, 1.0, n_channels)
@@ -64,4 +67,9 @@ def generate_simulated_eeg(store):
         time.sleep(psample)
         if terminate:
             print("Stopping headset simulator")
+            store.unsubscribe("stop-simulator", stop_simulator)
             break
+
+        if not published_to_store:
+            store.publish("headset-simulator-started")
+            published_to_store = True

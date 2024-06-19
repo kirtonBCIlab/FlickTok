@@ -1,0 +1,2 @@
+pylsl==1.16.2
+bci-essentials==0.1.3

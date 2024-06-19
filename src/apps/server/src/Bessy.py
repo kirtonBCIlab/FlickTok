@@ -1,9 +1,14 @@
+import time
+import threading
+import asyncio
 from bci_essentials.eeg_data import EegData
 from bci_essentials.classification.mi_classifier import MiClassifier
 from bci_essentials.io.lsl_sources import EegSource
 
 from .BessyInput import BessyInput
 from .BessyOutput import BessyOutput
+
+from .utils.store import Store
 
 
 class Bessy:
@@ -18,7 +23,7 @@ class Bessy:
 
     """
 
-    def __init__(self, num_classes: int):
+    def __init__(self, num_classes: int, store: Store = None):
         super().__init__()
 
         self.__num_classes = num_classes
@@ -27,7 +32,7 @@ class Bessy:
         # TODO - find a way to have the output signals in this classs to avoid having to make
         # the BessyOutput public.  That way we can do: bessy.some_signal.connect(my_slot) instead
         # of bessy.output.some_signal.connect(my_slot)
-        self.output = BessyOutput()
+        self.output = BessyOutput(store)
         self.__input = BessyInput()
 
         self.__bessy = None
@@ -75,6 +80,26 @@ class Bessy:
         message = "mi,{0},{1},{2}".format(self.__num_classes, label, duration)
         self.__input.queue_marker(message)
 
+    # training_loop_stop_event = threading.Event()
+
+    # def __training_loop(self):
+    #     while not self.training_loop_stop_event.is_set():
+    #         self.__bessy_step()
+    #         time.sleep(self.__bessy_step_msec / 1000)
+
+    training_loop_task = None
+
+    async def __training_loop(self):
+        while True:
+            self.__bessy_step()
+            await asyncio.sleep(self.__bessy_step_msec / 1000)
+
+    def start_training_loop(self):
+        self.training_loop_task = asyncio.get_event_loop().create_task(
+            self.__training_loop()
+        )
+        # self.training_loop_task = asyncio.create_task(self.__training_loop())
+
     def __setup_bessy(self):
         # Set up Bessy with motor imagery classifier, not really sure about options
         classifier = MiClassifier()
@@ -85,13 +110,22 @@ class Bessy:
         self.__bessy.setup(online=True, training=True, pp_type=None)
 
         # Start a periodic timer to process messages from bessy.
-        self.__loop_timer.timeout.connect(self.__bessy_step)
-        self.__loop_timer.start(self.__bessy_step_msec)
+        # self.__loop_timer.timeout.connect(self.__bessy_step)
+        # self.__loop_timer.start(self.__bessy_step_msec)
+
+        # thread = threading.Thread(target=self.__training_loop)
+        # thread.daemon = True  # Die when parent dies
+        # thread.start()
+        self.start_training_loop()
 
     def __kill_bessy(self):
         # Stop the loop timer and free bessy
-        self.__loop_timer.stop()
-        self.__loop_timer.timeout.disconnect()
+        # self.__loop_timer.stop()
+        # self.__loop_timer.timeout.disconnect()
+        # self.training_loop_stop_event.set()
+        if self.training_loop_task:
+            self.training_loop_task.cancel()
+            self.training_loop_task = None
         self.__bessy = None
 
     # This runs one loop of bessy, aka EegData

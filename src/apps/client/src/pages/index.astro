@@ -7,7 +7,7 @@ import PrototypeLayout from "../components/layouts/PrototypeLayout.astro";
     <div class="flex-1">
       <div class="flex flex-col h-full items-center justify-center">
         <h6>Headset Status:</h6>
-        <span>No EEG available</span>
+        <headset-status-text></headset-status-text>
       </div>
     </div>
     <div class="flex-1">
@@ -31,9 +31,37 @@ import PrototypeLayout from "../components/layouts/PrototypeLayout.astro";
   <div
     class="flex flex-col space-y-4 w-1/2 w-max-md mx-auto h-[calc(100%-85px)] justify-center"
   >
-    <a class="btn btn-primary" href="#">Social Media</a>
-    <a class="btn btn-primary" href="#">Connect BCI</a>
-    <a class="btn btn-primary" href="/train">Train BCI</a>
+    <a class="btn btn-primary btn-disabled" href="/train" id="train-btn"
+      >Train BCI</a
+    >
     <a class="btn btn-primary" href="#">Options</a>
   </div>
+
+  <script>
+    import globalStore from "../stores/global.store.js";
+
+    class HeadsetStatusText extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      setHeadsetStatus(value) {
+        this.innerText = value ? "Connected" : "No EEG available";
+        this.classList.toggle("text-red-500", !value);
+        this.classList.toggle("text-green-500", value);
+        const trainBtn = document.getElementById("train-btn");
+        trainBtn?.classList?.toggle("btn-disabled", !value);
+      }
+
+      connectedCallback() {
+        // Runs when the opening tag is added to the DOM
+        this.setHeadsetStatus(globalStore.eegStreamIsAvailable);
+        globalStore.__fns.subscribe("eegStreamIsAvailable", (value) =>
+          this.setHeadsetStatus(value)
+        );
+      }
+    }
+
+    customElements.define("headset-status-text", HeadsetStatusText);
+  </script>
 </PrototypeLayout>

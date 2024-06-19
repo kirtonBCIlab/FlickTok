@@ -5,13 +5,6 @@ readme = "README.md"
 authors = [{ name = "arazzz" }]
 requires-python = ">=3.11"
 dependencies = [
-	"fastapi",
-	"python-dotenv",
-	"uvicorn",
-	"python-socketio",
-	"pyyaml",
-	"rich",
-	"numpy",
 	"pylsl==1.16.2",
 	"bci-essentials==0.1.3",
 ]

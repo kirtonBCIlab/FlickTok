@@ -13,10 +13,16 @@ if (!(await $`which conda`.text()))
     process.exit(1);
 
 const conda = await $`which conda`.text();
-const condaActivate = conda.replace("/conda", "/activate");
+// const condaActivate = conda.replace("/conda", "/activate");
 
 // Activate conda environment
-await $`${condaActivate} ${condaEnvName}`;
+// await $`${condaActivate} ${condaEnvName}`;
+
+const pythonPath = `${conda.replace("bin/conda", "")}/envs/${condaEnvName}/bin/python`;
+
+await $`${pythonPath} main.py`
+
+// await $`conda shell.${SHELL.split('/').at(-1)} activate ${condaEnvName} && python main.py`;
 
 // Run dev
-await $`python main.py`;
+// await $`python main.py`;

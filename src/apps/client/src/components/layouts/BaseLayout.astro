@@ -23,18 +23,33 @@ const { title, description, ...props } = Astro.props;
     <slot />
     <script type="module">
       // @ts-nocheck
+      import IPCEventHandler from "/src/lib/IPCEventHandler.js";
+      import globalStore from "/src/stores/global.store.js";
+
+      globalStore.__fns.initialize();
+
       const cb = () => {
         if (typeof window.api === "undefined") return;
         window.api.receive("fromMain", (data) => {
-          console.log("Received from main process", data);
+          console.info("Received from main process:", data);
+          IPCEventHandler(data);
         });
       };
-      document.addEventListener("astro:page-load", cb);
-      // Clear event listeners on page unload
-      document.addEventListener("astro:before-swap", () => {
-        document.removeEventListener("astro:page-load", cb);
-        document.removeEventListener("astro:before-swap", this);
+      document.addEventListener("astro:page-load", cb, { once: true });
+
+      document.addEventListener("astro:after-swap", () => {
+        if (typeof window.api === "undefined") return;
+        window.api.send("toMain", {
+          id: "navigated-to",
+          data: { url: window.location.href },
+        });
       });
+
+      // // Clear event listeners on page unload
+      // document.addEventListener("astro:before-swap", () => {
+      //   document.removeEventListener("astro:page-load", cb);
+      //   document.removeEventListener("astro:before-swap", this);
+      // });
     </script>
   </body>
 </html>

@@ -2,15 +2,16 @@ from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
 
-class BessyOutput:
+class BessyOutput(Messenger):
     """BessyOutput is a Messenger object that converts output from Bessy
     into Qt signals (ie: events)
 
     """
 
-    def __init__(self):
+    def __init__(self, store):
         super().__init__()
         self.__ping_count = 0
+        self.store = store
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
     # bessy_ping_received = Signal(int)
@@ -20,7 +21,8 @@ class BessyOutput:
     def ping(self):
         """Implements Messenger.ping()"""
         self.__ping_count += 1
-        self.bessy_ping_received.emit(self.__ping_count)
+        # self.bessy_ping_received.emit(self.__ping_count)
+        self.store.set("ping_count", self.__ping_count)
 
     def marker_received(self, marker):
         """Implements Messenger.marker_received()"""
@@ -33,7 +35,9 @@ class BessyOutput:
         if len(info) == 4:
             label = int(info[2])
             if label >= 0:
-                self.trial_complete.emit(label)
+                self.store.set("trial_complete", label)
+                print("TRIAL COMPLETE!!")
+                # self.trial_complete.emit(label)
 
     def prediction(self, prediction: Prediction):
         """Implements Messenger.prediction()"""

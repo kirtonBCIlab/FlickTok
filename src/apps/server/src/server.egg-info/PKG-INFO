@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: server
+Version: 0.0.1
+Author: arazzz
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: pylsl==1.16.2
+Requires-Dist: bci-essentials==0.1.3

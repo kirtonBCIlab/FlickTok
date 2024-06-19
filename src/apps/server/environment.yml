@@ -6,3 +6,12 @@ dependencies:
   - liblsl
   - black
   - flake8
+  - fastapi
+  - python-dotenv
+  - uvicorn
+  - python-socketio
+  - pyyaml
+  - rich
+  - numpy
+  # - pylsl=1.16.2
+  # - bci-essentials=0.1.3
