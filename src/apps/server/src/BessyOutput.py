@@ -13,9 +13,9 @@ class BessyOutput:
         self.__ping_count = 0
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
-    bessy_ping_received = Signal(int)
-    trial_complete = Signal(int)
-    prediction_complete = Signal(int, list)
+    # bessy_ping_received = Signal(int)
+    # trial_complete = Signal(int)
+    # prediction_complete = Signal(int, list)
 
     def ping(self):
         """Implements Messenger.ping()"""

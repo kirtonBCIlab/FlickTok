@@ -1,27 +1,17 @@
-[tool.poetry]
+[project]
 name = "server"
 version = "0.0.1"
-description = ""
-authors = ["arazzz"]
-packages = [{include = "server", from = "../"}]
-
-[tool.poetry.dependencies]
-python = "^3.11"
-python-dotenv = "^1.0.0"
-fastapi = "^0.111.0"
-uvicorn = {extras = ["standard"], version = "^0.30.0"}
-python-socketio = "^5.11.2"
-pyyaml = "^6.0.1"
-rich = "^13.7.1"
-
-numpy = "^1.26.4"
-pylsl = "^1.16.2"
-[tool.poetry.dev-dependencies]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-dev = "server.main:start"
-start = "server.main:start"
+readme = "README.md"
+authors = [{ name = "arazzz" }]
+requires-python = ">=3.11"
+dependencies = [
+	"fastapi",
+	"python-dotenv",
+	"uvicorn",
+	"python-socketio",
+	"pyyaml",
+	"rich",
+	"numpy",
+	"pylsl==1.16.2",
+	"bci-essentials==0.1.3",
+]

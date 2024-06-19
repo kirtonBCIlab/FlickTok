@@ -13,7 +13,7 @@ def start() -> None:
     HOST = os.getenv("HOST") or mono_config["server"]["host"] or "0.0.0.0"
     PORT = os.getenv("PORT") or mono_config["server"]["port"] or 8000
 
-    uvicorn.run("server.src.app:app", host=HOST, port=PORT, loop="asyncio")
+    uvicorn.run("src.app:app", host=HOST, port=PORT, loop="asyncio")
 
 
 if __name__ == "__main__":

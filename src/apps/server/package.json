@@ -2,8 +2,8 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "postinstall": "pip install uv && uv venv && source .venv/bin/activate && uv pip install -e .",
-    "dev": "nodemon --watch ./src --ext py,js,ts,jsx,tsx,json,yml,yaml --exec \"source .venv/bin/activate & python ./main.py\""
+    "postinstall": "bun ./scripts/setup.js",
+    "dev": "nodemon --watch ./src --ext py,js,ts,jsx,tsx,json,yml,yaml --exec \"bun ./scripts/run.dev.js\""
   },
   "dependencies": {
     "nodemon": "^3.1.2"

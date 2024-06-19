@@ -4,6 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from rich.console import Console
 
+from .pubsub import Store
+from .headset_sim_fn import generate_simulated_eeg
+
 console = Console()  # Prints colored text to the terminal
 
 fastapp = FastAPI()
@@ -13,6 +16,9 @@ sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
 app = socketio.ASGIApp(sio, other_asgi_app=fastapp)
 
 connected_clients = set()  # if we want to keep track of connected clients
+
+# In-memory store
+store = Store()
 
 
 @sio.event  # called when a client connects
@@ -41,4 +47,11 @@ async def healthcheck():
 
 @fastapp.get("/api/simulate-headset")
 async def headset_simulator():
-    pass
+    generate_simulated_eeg(store)
+    return {"msg": "Simulating headset data..."}
+
+
+@fastapp.get("/api/stop-simulated-headset")
+async def stop_simulator():
+    store.publish("stop-simulator")
+    return {"msg": "Stopping simulated headset data..."}

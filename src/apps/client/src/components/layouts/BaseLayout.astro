@@ -23,11 +23,17 @@ const { title, description, ...props } = Astro.props;
     <slot />
     <script type="module">
       // @ts-nocheck
-      document.addEventListener("astro:page-load", () => {
+      const cb = () => {
         if (typeof window.api === "undefined") return;
         window.api.receive("fromMain", (data) => {
           console.log("Received from main process", data);
         });
+      };
+      document.addEventListener("astro:page-load", cb);
+      // Clear event listeners on page unload
+      document.addEventListener("astro:before-swap", () => {
+        document.removeEventListener("astro:page-load", cb);
+        document.removeEventListener("astro:before-swap", this);
       });
     </script>
   </body>
