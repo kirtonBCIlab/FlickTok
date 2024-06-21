@@ -72,31 +72,31 @@ ipcMain.on("toMain", (event, payload) => {
       event.sender.send("fromMain", { id, data: { msg: "pong" } });
       break;
     case "navigated-to":
-      if (data.url.includes("/train")) {
-        view = new BrowserView();
-        win.addBrowserView(view);
-        view.setBounds({
-          // Center the view on the main window
-          x: win.getBounds().width / 2 - 200,
-          y: win.getBounds().height / 2 - 200,
-          width: 400,
-          height: 400,
-        });
-        view.webContents.loadURL("https://instagram.com/reels");
-        // Adjust the view's bounds when the main window's bounds change
-        win.on("resize", () => {
-          view.setBounds({
-            x: win.getBounds().width / 2 - 200,
-            y: win.getBounds().height / 2 - 200,
-            width: 400,
-            height: 400,
-          });
-        });
-      } else {
-        // Remove view
-        win.removeBrowserView(view);
-        view = null;
-      }
+      // if (data.url.includes("/train")) {
+      //   view = new BrowserView();
+      //   win.addBrowserView(view);
+      //   view.setBounds({
+      //     // Center the view on the main window
+      //     x: win.getBounds().width / 2 - 200,
+      //     y: win.getBounds().height / 2 - 200,
+      //     width: 400,
+      //     height: 400,
+      //   });
+      //   view.webContents.loadURL("https://instagram.com/reels");
+      //   // Adjust the view's bounds when the main window's bounds change
+      //   win.on("resize", () => {
+      //     view.setBounds({
+      //       x: win.getBounds().width / 2 - 200,
+      //       y: win.getBounds().height / 2 - 200,
+      //       width: 400,
+      //       height: 400,
+      //     });
+      //   });
+      // } else {
+      //   // Remove view
+      //   win.removeBrowserView(view);
+      //   view = null;
+      // }
       break;
     default:
       sio.emit(id, data);

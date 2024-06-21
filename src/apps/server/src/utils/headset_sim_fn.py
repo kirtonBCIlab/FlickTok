@@ -4,6 +4,8 @@ import numpy as np
 
 from pylsl import StreamInfo, StreamOutlet
 
+from .helpers import console
+
 
 def generate_simulated_eeg(store):
 
@@ -13,7 +15,7 @@ def generate_simulated_eeg(store):
         nonlocal terminate
         terminate = True
 
-    store.subscribe("stop-simulator", stop_simulator)
+    store.subscribe("stop-headset-simulator", stop_simulator)
     # signal.signal(signal.SIGINT, stop_simulator)
 
     # This is what comes from an Emotiv EPOC+ headset LSL streamed via EmotivPro
@@ -59,6 +61,8 @@ def generate_simulated_eeg(store):
 
     published_to_store = False
 
+    console.log("[blue]Starting headset simulator...[/blue]")
+
     # Spew out random samples
     while True:
         sample = np.random.uniform(0.0, 1.0, n_channels)
@@ -66,8 +70,8 @@ def generate_simulated_eeg(store):
 
         time.sleep(psample)
         if terminate:
-            print("Stopping headset simulator")
-            store.unsubscribe("stop-simulator", stop_simulator)
+            console.log("[red]Stopping headset simulator...[/red]")
+            store.unsubscribe("stop-headset-simulator", stop_simulator)
             break
 
         if not published_to_store:

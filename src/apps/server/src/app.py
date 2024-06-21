@@ -2,29 +2,49 @@ import asyncio
 import socketio
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from rich.console import Console
+from contextlib import asynccontextmanager
 
+from .utils.helpers import fifo_worker, delayed_exec, console
 from .utils.store import Store
 from .utils.headset_sim_fn import generate_simulated_eeg
 from .FlickTokModel import FlickTokModel
-
-console = Console()  # Prints colored text to the terminal
-
-fastapp = FastAPI()
-fastapp.add_middleware(CORSMiddleware, allow_origins=["*"])
-
-sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
-app = socketio.ASGIApp(sio, other_asgi_app=fastapp)
 
 connected_clients = set()  # if we want to keep track of connected clients
 
 # In-memory pub/sub store
 store = Store(
     eeg_stream_is_available=False,
-    raining_btn_state="",
+    training_btn_state="",
     training_status=None,
     trial_complete=False,
 )
+
+
+async def on_startup(app: FastAPI):
+    # Startup logic
+    asyncio.create_task(fifo_worker())
+
+
+async def on_shutdown(app: FastAPI):
+    # Shutdown logic
+    store.publish("stop-headset-simulator")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await on_startup(app)
+    yield
+    await on_shutdown(app)
+
+
+fastapp = FastAPI()
+fastapp.add_middleware(CORSMiddleware, allow_origins=["*"])
+fastapp.fifo_queue = (
+    asyncio.Queue()
+)  # can use via `await fastapp.fifo_queue.put(lambda: ...)`
+
+sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
+app = socketio.ASGIApp(sio, other_asgi_app=fastapp)
 
 # Models
 flicktok_model = FlickTokModel(store, sio)
@@ -44,7 +64,7 @@ async def disconnect(sid):
 
 @sio.on("run-fes-test")  # called when the client emits the 'run-fes-test' event
 async def run_fes_test(sid, data):
-    console.log(f"[blue]Running FES test...[/blue]")
+    console.log(f"[cyan]Running FES test...[/cyan]")
 
 
 # Healthcheck endpoint to verify the http server is running
@@ -53,15 +73,15 @@ async def healthcheck():
     return {"status": "ok"}
 
 
-@fastapp.get("/api/simulate-headset")
-async def headset_simulator(background_tasks: BackgroundTasks):
+@fastapp.get("/api/start-headset-simulator")
+async def start_headset_simulator(background_tasks: BackgroundTasks):
     background_tasks.add_task(generate_simulated_eeg, store)
     return {"msg": "Simulating headset data..."}
 
 
-@fastapp.get("/api/stop-simulated-headset")
-async def stop_simulator():
-    store.publish("stop-simulator")
+@fastapp.get("/api/stop-headset-simulator")
+async def stop_headset_simulator():
+    store.publish("stop-headset-simulator")
     return {"msg": "Stopping simulated headset data..."}
 
 
