@@ -109,8 +109,10 @@ const handleNav = (event, payload) => {
   if (data.url.includes("/predict")) {
     instaView = new WebContentsView({
       webPreferences: {
-        preload: `${__electron_dirname}/preloadInsta.mjs`,
-        sandbox: false,
+        enableRemoteModule: true,
+        preload: `${__electron_dirname}/preloadInstaSimplified.js`,
+        // preload: `${__electron_dirname}/preloadInsta.mjs`,
+        // sandbox: false,
       },
     });
     win.contentView.addChildView(instaView);
