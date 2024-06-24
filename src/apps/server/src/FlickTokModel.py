@@ -49,7 +49,7 @@ class FlickTokModel:
         self.sio = sio
 
         # settings
-        self.eeg_scan_seconds = 5
+        self.eeg_scan_seconds = 1
         self.preroll_seconds = 1
         self.rest_seconds = 2
         self.action_seconds = 2

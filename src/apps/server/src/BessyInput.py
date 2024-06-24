@@ -1,6 +1,7 @@
 from pylsl import local_clock
 
 from bci_essentials.io.sources import MarkerSource
+from .BessyLSLMessenger import BessyLSLMessenger
 
 
 class BessyInput(MarkerSource):
@@ -12,6 +13,7 @@ class BessyInput(MarkerSource):
     def __init__(self):
         super().__init__()
         self.__reset_queue()
+        self.__lsl_messenger = BessyLSLMessenger()
 
     def queue_marker(self, message):
         """Adds a message and timestamp to a queue for Bessy to read"""
@@ -24,6 +26,7 @@ class BessyInput(MarkerSource):
 
     def get_markers(self) -> tuple[list[list], list]:
         """Implements MarkerSource.get_markers()"""
+        self.__lsl_messenger.send_markers(self.__messages, self.__timestamps)
         markers = [self.__messages, self.__timestamps]
         self.__reset_queue()
         return markers

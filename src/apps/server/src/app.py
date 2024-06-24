@@ -131,6 +131,7 @@ store.on_change("eeg_stream_is_available", notify_client_of_eeg_stream_availabil
 # endregion
 
 
+# region Training & prediction controls
 @sio.on("set-training-btn-state")
 async def set_training_btn_state(sid, value):
     if value == "start":
@@ -146,3 +147,6 @@ async def set_prediction_btn_state(sid, value):
         await flicktok_model.start_predicting()
     elif value == "stop":
         await flicktok_model.stop_predicting()
+
+
+# endregion

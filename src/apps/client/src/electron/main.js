@@ -56,7 +56,7 @@ app.on("ready", () => {
 subscribeKey(ctx, "serversLoaded", (v) => {
   if (!v) return;
 
-  win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
   win.loadURL(clientURL); // client loads at http://localhost:8001 by default
 
@@ -90,36 +90,42 @@ ipcMain.on("toMain", (event, payload) => {
 });
 
 ["connect", "disconnect", "fromPython"].forEach((eventName) => {
-  sio.on(eventName, (payload) =>
+  sio.on(eventName, (payload) => {
     win.webContents.send("fromMain", {
       id: `py:${payload?.id ?? eventName}`,
       data: payload?.data ?? {},
-    })
-  );
+    });
+    if (instaView) {
+      instaView.webContents.send("fromMain", {
+        id: `py:${payload?.id ?? eventName}`,
+        data: payload?.data ?? {},
+      });
+    }
+  });
 });
 
 const handleNav = (event, payload) => {
   const { id, data } = payload;
-  // if (data.url.includes("/predict")) {
-  //   instaView = new WebContentsView({
-  //     webPreferences: {
-  //       enableRemoteModule: true,
-  //       preload: `${__electron_dirname}/preloadInsta.js`,
-  //     },
-  //   });
-  //   win.contentView.addChildView(instaView);
-  //   instaView.webContents.loadURL("https://instagram.com/reels");
-  //   instaView.setBounds({
-  //     width: win.getContentBounds().width * 0.8,
-  //     height: win.getContentBounds().height * 0.8,
-  //     x: win.getContentBounds().width * 0.1,
-  //     y: win.getContentBounds().height * 0.1,
-  //   });
-  //   instaView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
-  // } else {
-  //   if (instaView) {
-  //     win.contentView.removeChildView(instaView);
-  //     instaView = null;
-  //   }
-  // }
+  if (data.url.includes("/predict")) {
+    instaView = new WebContentsView({
+      webPreferences: {
+        preload: `${__electron_dirname}/preloadInsta.mjs`,
+        sandbox: false,
+      },
+    });
+    win.contentView.addChildView(instaView);
+    instaView.webContents.loadURL("https://instagram.com/reels");
+    instaView.setBounds({
+      width: win.getContentBounds().width * 0.8,
+      height: win.getContentBounds().height * 0.8,
+      x: win.getContentBounds().width * 0.1,
+      y: win.getContentBounds().height * 0.1,
+    });
+    instaView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  } else {
+    if (instaView) {
+      win.contentView.removeChildView(instaView);
+      instaView = null;
+    }
+  }
 };
