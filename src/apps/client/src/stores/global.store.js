@@ -40,6 +40,7 @@ let globalStore = proxy({
         stop: "bg-slate-500",
         rest: "bg-red-500",
         action: "bg-green-500",
+        actionDetected: "bg-blue-500",
         complete: "bg-slate-500",
       },
       text: {
@@ -47,6 +48,7 @@ let globalStore = proxy({
         stop: "Predictions stopped",
         rest: "Rest",
         action: "Action",
+        actionDetected: "Yay!",
         complete: "Predictions complete",
       },
     },
@@ -95,6 +97,8 @@ if (window.api) {
       case "py:set-prediction-status":
         globalStore.ui.predictionState.state = data.state;
         break;
+      case "py:action-detected":
+        globalStore.ui.predictionState.state = "actionDetected";
     }
   });
 }

@@ -72,7 +72,7 @@ class FlickTokModel:
         )
         self.eeg_scan_timer.start()
 
-    def start_training(self):
+    async def start_training(self):
         # Initialize Bessy and connect an Eeg source (note - init freezes if stream not available).
         # TODO - place a guard here to cancel training if EEG stream not available.
         # TODO - replace EmotivEegSource with whatever we're using for FlickTok
@@ -83,28 +83,18 @@ class FlickTokModel:
         # Kick off state machine that runs training sequence
         self.__training_state = TrainingState.Start
         self.__trial_count = 0
-        self.__perform_training_step()
+        await self.__perform_training_step()
 
-    def stop_training(self):
+    async def stop_training(self):
         self.__training_state = TrainingState.Stop
         self.__bessy.stop_eeg_processing()
-        self.__send_training_status()
-
-    def start_fn_with_delay(self, fn, delay_seconds):
-        def run_training_step():
-            time.sleep(delay_seconds)
-            fn()
-
-        timer_thread = threading.Thread(target=run_training_step)
-        timer_thread.daemon = True
-        timer_thread.start()
-        timer_thread.join()
+        await self.__send_training_status()
 
     async def start_async_fn_with_delay(self, fn, delay_seconds):
         await asyncio.sleep(delay_seconds)
         await fn()
 
-    def __perform_training_step(self):
+    async def __perform_training_step(self):
         # This is a state machine that alternately marks rest and action classes.
         # When marking is complete, Bessy replies with a trial_complete signal.
         # We use this signal to call this function again, thereby creating a loop.
@@ -112,36 +102,50 @@ class FlickTokModel:
         match self.__training_state:
 
             case TrainingState.Start:
-                self.__send_training_status()
+                await self.__send_training_status()
                 self.__trial_count = 0
                 self.__training_state = TrainingState.Rest
-                self.start_fn_with_delay(
+                # self.start_fn_with_delay(
+                #     self.__perform_training_step, self.preroll_seconds
+                # )
+                await self.start_async_fn_with_delay(
                     self.__perform_training_step, self.preroll_seconds
                 )
 
             case TrainingState.Rest:
                 if self.__trial_count < self.number_of_trials:
                     self.__trial_count += 1
-                    self.__send_training_status()
+                    await self.__send_training_status()
                     self.__bessy.mark_trial(
                         TrainingLabels.Rest.value, self.rest_seconds
                     )
                     self.__training_state = TrainingState.Action
                 else:
                     self.__training_state = TrainingState.Complete
-                    self.__send_training_status()
+                    await self.__send_training_status()
                     self.__bessy.end_training_session()
 
             case TrainingState.Action:
-                self.__send_training_status()
+                await self.__send_training_status()
                 self.__bessy.mark_trial(
                     TrainingLabels.Action.value, self.action_seconds
                 )
                 self.__training_state = TrainingState.Rest
 
-    def __send_training_status(self):
+    async def __send_training_status(self):
         status = TrainingStatus(self.__training_state, self.__trial_count)
-        self.store.set("training_status", status)
+        console.log("[purple]set-training-status[/purple]")
+        await self.sio.emit(
+            "fromPython",
+            {
+                "id": "set-training-status",
+                "data": {
+                    "state": status.state.name.lower(),
+                    "trialCount": status.trials,
+                },
+            },
+        )
+        # self.store.set("training_status", status)
         # self.training_status_changed.emit(status)
 
     # prediction_status_changed = Signal(PredictionState)
@@ -192,10 +196,13 @@ class FlickTokModel:
                 # )
                 # QTimer.singleShot(self.action_seconds * 1000, self.__perform_prediction_step)
 
-    def __process_prediction(self, label: int, probabilities: list):
+    async def __process_prediction(self, label: int, probabilities: list):
         if label == TrainingLabels.Action.value:
             # self.action_detected.emit(True)
-            self.store.emit("action_detected", True)
+            # self.store.emit("action_detected", True)
+            await self.sio.emit(
+                "fromPython", {"id": "action-detected", "data": {"value": True}}
+            )
             self.__prediction_state = PredictionState.Rest
 
     async def __send_prediction_status(self):
@@ -216,25 +223,27 @@ class FlickTokModel:
                     ).lower()
                 },
             },
-            # "prediction_status",
-            # pred_state_reverse_mapping.get(self.__prediction_state),
-            # self.__prediction_state,
         )
 
     def __initialize_bessy(self):
         self.__trial_count = 0
         self.__training_state = TrainingState.Stop
         self.__prediction_state = PredictionState.Stop
-        self.__bessy = Bessy(num_classes=len(TrainingLabels), store=self.store)
-        self.store.subscribe(
-            "trial_complete",
-            lambda payload: self.__perform_training_step(),
+        self.__bessy = Bessy(
+            num_classes=len(TrainingLabels),
+            store=self.store,
+            perform_training_step=self.__perform_training_step,
+            process_prediction=self.__process_prediction,
         )
-        self.store.subscribe(
-            "prediction_complete",
-            lambda payload: self.__process_prediction(
-                payload.get("value")[0], payload.get("value")[1]
-            ),
-        )
+        # self.store.subscribe(
+        #     "trial_complete",
+        #     lambda payload: self.__perform_training_step(),
+        # )
+        # self.store.subscribe(
+        #     "prediction_complete",
+        #     lambda payload: self.__process_prediction(
+        #         payload.get("value")[0], payload.get("value")[1]
+        #     ),
+        # )
         # self.__bessy.output.trial_complete.connect(self.__perform_training_step)
         # self.__bessy.output.prediction_complete.connect(self.__process_prediction)

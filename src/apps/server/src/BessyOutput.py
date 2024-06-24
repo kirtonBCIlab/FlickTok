@@ -1,3 +1,4 @@
+import asyncio
 from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
@@ -8,10 +9,12 @@ class BessyOutput(Messenger):
 
     """
 
-    def __init__(self, store):
+    def __init__(self, store, perform_training_step, process_prediction):
         super().__init__()
         self.__ping_count = 0
         self.store = store
+        self.perform_training_step = perform_training_step
+        self.process_prediction = process_prediction
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
     # bessy_ping_received = Signal(int)
@@ -35,7 +38,8 @@ class BessyOutput(Messenger):
         if len(info) == 4:
             label = int(info[2])
             if label >= 0:
-                self.store.set("trial_complete", label)
+                asyncio.run(self.perform_training_step())
+                # self.store.set("trial_complete", label)
                 # self.trial_complete.emit(label)
 
     def prediction(self, prediction: Prediction):
@@ -45,4 +49,9 @@ class BessyOutput(Messenger):
         # predictions: list[list[float]]  <--- probabilities of labels (one list per predicion)
         for label, probabilities in zip(prediction.labels, prediction.probabilities):
             # self.prediction_complete.emit(int(label), probabilities)
-            self.store.set("prediction_complete", (int(label), probabilities))
+            # self.store.set("prediction_complete", (int(label), probabilities))
+            try:
+                asyncio.run(self.process_prediction(label, probabilities))
+            except ValueError:
+                # TODO - double check this; process_prediction(label, probabilities) doesn't always return a coroutine?
+                pass

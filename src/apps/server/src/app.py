@@ -18,13 +18,13 @@ connected_clients = set()  # if we want to keep track of connected clients
 # In-memory pub/sub store
 store = Store(
     eeg_stream_is_available=False,
-    training_btn_state="",
-    training_status=None,
-    trial_complete=False,
-    prediction_btn_state="",
-    prediction_status=None,
-    prediction_complete=False,
-    action_detected=False,
+    # training_btn_state="",
+    # training_status=None,
+    # trial_complete=False,
+    # prediction_btn_state="",
+    # prediction_status=None,
+    # prediction_complete=False,
+    # action_detected=False,
 )
 
 
@@ -131,59 +131,14 @@ store.on_change("eeg_stream_is_available", notify_client_of_eeg_stream_availabil
 # endregion
 
 
-# region Training states
 @sio.on("set-training-btn-state")
-def set_training_btn_state(sid, value):
-    store.set("training_btn_state", value)  # "start" or "stop"
+async def set_training_btn_state(sid, value):
+    if value == "start":
+        await flicktok_model.start_training()
+    elif value == "stop":
+        await flicktok_model.stop_training()
 
 
-def training_btn_state_change_handler(payload):
-    console.log(f"[green]training_btn_state: {payload}[/green]")
-    value = payload.get("value")
-    match value:
-        case "start":
-            flicktok_model.start_training()
-        case "stop":
-            flicktok_model.stop_training()
-        case _:
-            pass
-
-
-store.on_change(
-    "training_btn_state",
-    training_btn_state_change_handler,
-)
-
-
-def notify_client_of_training_status(payload):
-    console.log(f"[green]training_status: {payload}[/green]")
-    asyncio.run(
-        sio.emit(
-            "fromPython",
-            {
-                "id": "set-training-status",
-                "data": {
-                    "state": payload.get("value").state.name.lower(),
-                    "trialCount": payload.get("value").trials,
-                },
-            },
-        )
-    )
-
-
-def notify_client_of_training_status_thread(payload):
-    thread = threading.Thread(target=notify_client_of_training_status, args=(payload,))
-    thread.daemon = True
-    thread.start()
-    thread.join()
-
-
-store.on_change("training_status", notify_client_of_training_status_thread)
-
-# endregion
-
-
-# region Prediction states
 @sio.on("set-prediction-btn-state")
 async def set_prediction_btn_state(sid, value):
     # store.set("prediction_btn_state", value)  # "start" or "stop"
@@ -191,34 +146,3 @@ async def set_prediction_btn_state(sid, value):
         await flicktok_model.start_predicting()
     elif value == "stop":
         await flicktok_model.stop_predicting()
-
-
-# def prediction_btn_state_change_handler(payload):
-#     console.log(f"[green]prediction_btn_state: {payload}[/green]")
-#     value = payload.get("value")
-#     match value:
-#         case "start":
-#             flicktok_model.start_predicting()
-#         case "stop":
-#             flicktok_model.stop_predicting()
-#         case _:
-#             pass
-
-
-# store.on_change(
-#     "prediction_btn_state",
-#     prediction_btn_state_change_handler,
-# )
-
-
-# def notify_client_of_prediction_status(payload):
-#     console.log(f"[green]prediction_status: {payload}[/green]")
-#     # data_to_send = {
-#     #     "id": "set-prediction-status",
-#     #     "data": {"state": payload.get("value").lower()},
-#     # }
-
-
-# store.subscribe("prediction_status", notify_client_of_prediction_status)
-
-# endregion

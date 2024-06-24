@@ -24,7 +24,13 @@ class Bessy:
 
     """
 
-    def __init__(self, num_classes: int, store: Store):
+    def __init__(
+        self,
+        num_classes: int,
+        store: Store,
+        perform_training_step: callable,
+        process_prediction: callable,
+    ):
         super().__init__()
 
         self.store = store
@@ -35,7 +41,11 @@ class Bessy:
         # TODO - find a way to have the output signals in this classs to avoid having to make
         # the BessyOutput public.  That way we can do: bessy.some_signal.connect(my_slot) instead
         # of bessy.output.some_signal.connect(my_slot)
-        self.output = BessyOutput(store=store)
+        self.output = BessyOutput(
+            store=store,
+            perform_training_step=perform_training_step,
+            process_prediction=process_prediction,
+        )
         self.__input = BessyInput()
 
         self.__bessy = None

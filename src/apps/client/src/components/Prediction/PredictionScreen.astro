@@ -24,7 +24,7 @@ const { ...props } = Astro.props;
           globalStore.ui.predictionState.text[
             globalStore.ui.predictionState.state
           ]
-        } ${["rest", "action"].includes(globalStore.ui.predictionState.state) ? globalStore.ui.predictionState.trialCount : ""}`;
+        }`;
       });
       this.setBgColor();
       predictionStateText.innerHTML =
