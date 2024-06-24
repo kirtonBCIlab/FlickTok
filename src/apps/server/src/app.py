@@ -1,10 +1,14 @@
+import sys
+import atexit
+import threading
 import asyncio
 import socketio
+import signal
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .utils.helpers import fifo_worker, delayed_exec, console
+from .utils.helpers import fifo_worker, delayed_exec, console, StoppableTask
 from .utils.store import Store
 from .utils.headset_sim_fn import generate_simulated_eeg
 from .FlickTokModel import FlickTokModel
@@ -22,12 +26,13 @@ store = Store(
 
 async def on_startup(app: FastAPI):
     # Startup logic
-    asyncio.create_task(fifo_worker())
+    console.log(f"[cyan]Application is starting up...[/cyan]")
+    await sio.start_background_task(listen_for_server_shutdown)
 
 
 async def on_shutdown(app: FastAPI):
     # Shutdown logic
-    store.publish("stop-headset-simulator")
+    console.log(f"[cyan]Application is shutting down...[/cyan]")
 
 
 @asynccontextmanager
@@ -37,14 +42,36 @@ async def lifespan(app: FastAPI):
     await on_shutdown(app)
 
 
-fastapp = FastAPI()
+fastapp = FastAPI(lifespan=lifespan)
 fastapp.add_middleware(CORSMiddleware, allow_origins=["*"])
-fastapp.fifo_queue = (
-    asyncio.Queue()
-)  # can use via `await fastapp.fifo_queue.put(lambda: ...)`
 
 sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
 app = socketio.ASGIApp(sio, other_asgi_app=fastapp)
+
+
+def inform_clients_of_shutdown(store, payload):
+    console.log(f"[yellow]Informing clients of shutdown...[/yellow]")
+    asyncio.run(sio.emit("fromPython", {"id": "server-shutdown", "data": {}}))
+    store.set("server-shutdown", False)
+
+
+def inform_clients_of_shutdown_thread(payload):
+    if not payload.get("value"):
+        return
+    thread = threading.Thread(target=inform_clients_of_shutdown, args=(store, payload))
+    thread.daemon = True  # Die when parent dies
+    thread.start()
+
+
+store.on_change("server-shutdown", inform_clients_of_shutdown_thread)
+
+
+async def listen_for_server_shutdown():
+    console.log(f"[yellow]Listening for server shutdown...[/yellow]")
+    loop = asyncio.get_event_loop()
+    for sig in [signal.SIGTERM, signal.SIGINT]:
+        loop.add_signal_handler(sig, lambda: store.set("server-shutdown", True))
+
 
 # Models
 flicktok_model = FlickTokModel(store, sio)
@@ -147,7 +174,7 @@ def notify_client_of_training_status(payload):
             "trials": payload.get("value").trials,
         },
     }
-    asyncio.get_event_loop().create_task(
+    asyncio.run(
         sio.emit(
             "fromPython",
             data_to_send_clientside,

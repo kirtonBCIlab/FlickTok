@@ -6,3 +6,9 @@ Requires-Python: >=3.11
 Description-Content-Type: text/markdown
 Requires-Dist: pylsl==1.16.2
 Requires-Dist: bci-essentials==0.1.3
+Requires-Dist: fastapi
+Requires-Dist: python-dotenv
+Requires-Dist: python-socketio
+Requires-Dist: pyyaml
+Requires-Dist: rich
+Requires-Dist: numpy

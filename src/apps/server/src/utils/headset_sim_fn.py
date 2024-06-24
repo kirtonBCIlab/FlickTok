@@ -1,5 +1,5 @@
-import signal
 import time
+import threading
 import numpy as np
 
 from pylsl import StreamInfo, StreamOutlet
@@ -7,7 +7,7 @@ from pylsl import StreamInfo, StreamOutlet
 from .helpers import console
 
 
-def generate_simulated_eeg(store):
+def simulate_eeg(store):
 
     terminate = False
 
@@ -16,7 +16,6 @@ def generate_simulated_eeg(store):
         terminate = True
 
     store.subscribe("stop-headset-simulator", stop_simulator)
-    # signal.signal(signal.SIGINT, stop_simulator)
 
     # This is what comes from an Emotiv EPOC+ headset LSL streamed via EmotivPro
     # Using a lower rate to be nice to network, the sim just sends dummy data so this shouldn't matter
@@ -77,3 +76,9 @@ def generate_simulated_eeg(store):
         if not published_to_store:
             store.publish("headset-simulator-started")
             published_to_store = True
+
+
+def generate_simulated_eeg(store):
+    thread = threading.Thread(target=simulate_eeg, args=(store,))
+    thread.daemon = True  # Die when parent dies
+    thread.start()
