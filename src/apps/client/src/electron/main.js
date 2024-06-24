@@ -121,7 +121,7 @@ const handleNav = (event, payload) => {
       x: win.getContentBounds().width * 0.1,
       y: win.getContentBounds().height * 0.1,
     });
-    instaView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+    // instaView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
   } else {
     if (instaView) {
       win.contentView.removeChildView(instaView);
