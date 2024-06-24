@@ -1,0 +1,53 @@
+---
+const { ...props } = Astro.props;
+---
+
+<prediction-screen {...props}></prediction-screen>
+
+<script>
+  import globalStore from "/src/stores/global.store.js";
+
+  class PredictionScreen extends HTMLElement {
+    constructor() {
+      super();
+
+      this.className =
+        "w-full h-[calc(100%-95px-40px)] flex items-center justify-center";
+
+      const predictionStateText = document.getElementById(
+        "prediction-state-text"
+      );
+
+      globalStore.__fns.subscribe((v) => {
+        this.setBgColor();
+        predictionStateText.innerHTML = `${
+          globalStore.ui.predictionState.text[
+            globalStore.ui.predictionState.state
+          ]
+        } ${["rest", "action"].includes(globalStore.ui.predictionState.state) ? globalStore.ui.predictionState.trialCount : ""}`;
+      });
+      this.setBgColor();
+      predictionStateText.innerHTML =
+        globalStore.ui.predictionState.text[
+          globalStore.ui.predictionState.state
+        ];
+    }
+
+    setBgColor() {
+      for (const bg of Object.values(this.classList)) {
+        if (bg.startsWith("bg-")) {
+          this.classList.remove(bg);
+        }
+      }
+      this.classList.add(
+        globalStore.ui.predictionState.bgColors[
+          globalStore.ui.predictionState.state
+        ]
+      );
+    }
+
+    connectedCallback() {}
+  }
+
+  customElements.define("prediction-screen", PredictionScreen);
+</script>

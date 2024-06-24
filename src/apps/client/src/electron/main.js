@@ -3,7 +3,7 @@
  */
 import axios from "axios";
 import waitOn from "wait-on";
-import { app, BrowserWindow, BrowserView, ipcMain } from "electron";
+import { app, BrowserWindow, WebContentsView, ipcMain, screen } from "electron";
 import { proxy } from "valtio";
 import { subscribeKey } from "valtio/utils";
 import { io as sioClient } from "socket.io-client";
@@ -20,16 +20,21 @@ const waitOnAstroEndPoint = clientURL.replace("http://", "http-get://");
 const sio = sioClient(serverURL, { transports: ["websocket"] });
 
 let win; // main window
-let view; // instagram view
+let instaView; // instagram view
 const ctx = proxy({
   serversLoaded: false,
 }); // can subscribe to changes in ctx (the application state)
 
 app.on("ready", () => {
+  // get screen dimensions
+  let { width, height } = screen.getPrimaryDisplay().bounds;
+  width *= 0.4;
+  height *= 0.8;
+
   // create main window
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width,
+    height,
     show: false,
     webPreferences: {
       enableRemoteModule: true,
@@ -37,8 +42,8 @@ app.on("ready", () => {
     },
   });
 
-  win.setMinimumSize(400, 300); // set minimum window size
-  win.setMaximumSize(800, 600); // set maximum window size
+  win.setMinimumSize(width, height); // set minimum window size
+  win.setMaximumSize(width, height); // set maximum window size
   win.removeMenu(); // remove default menu
 
   // wait for servers to be ready before loading the client
@@ -72,31 +77,7 @@ ipcMain.on("toMain", (event, payload) => {
       event.sender.send("fromMain", { id, data: { msg: "pong" } });
       break;
     case "navigated-to":
-      // if (data.url.includes("/train")) {
-      //   view = new BrowserView();
-      //   win.addBrowserView(view);
-      //   view.setBounds({
-      //     // Center the view on the main window
-      //     x: win.getBounds().width / 2 - 200,
-      //     y: win.getBounds().height / 2 - 200,
-      //     width: 400,
-      //     height: 400,
-      //   });
-      //   view.webContents.loadURL("https://instagram.com/reels");
-      //   // Adjust the view's bounds when the main window's bounds change
-      //   win.on("resize", () => {
-      //     view.setBounds({
-      //       x: win.getBounds().width / 2 - 200,
-      //       y: win.getBounds().height / 2 - 200,
-      //       width: 400,
-      //       height: 400,
-      //     });
-      //   });
-      // } else {
-      //   // Remove view
-      //   win.removeBrowserView(view);
-      //   view = null;
-      // }
+      handleNav(event, payload);
       break;
     default:
       sio.emit(id, data);
@@ -108,6 +89,37 @@ ipcMain.on("toMain", (event, payload) => {
   }
 });
 
-sio.on("fromPython", ({ id, data }) =>
-  win.webContents.send("fromMain", { id: `py:${id}`, data })
-);
+["connect", "disconnect", "fromPython"].forEach((eventName) => {
+  sio.on(eventName, (payload) =>
+    win.webContents.send("fromMain", {
+      id: `py:${payload?.id ?? eventName}`,
+      data: payload?.data ?? {},
+    })
+  );
+});
+
+const handleNav = (event, payload) => {
+  const { id, data } = payload;
+  // if (data.url.includes("/predict")) {
+  //   instaView = new WebContentsView({
+  //     webPreferences: {
+  //       enableRemoteModule: true,
+  //       preload: `${__electron_dirname}/preloadInsta.js`,
+  //     },
+  //   });
+  //   win.contentView.addChildView(instaView);
+  //   instaView.webContents.loadURL("https://instagram.com/reels");
+  //   instaView.setBounds({
+  //     width: win.getContentBounds().width * 0.8,
+  //     height: win.getContentBounds().height * 0.8,
+  //     x: win.getContentBounds().width * 0.1,
+  //     y: win.getContentBounds().height * 0.1,
+  //   });
+  //   instaView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  // } else {
+  //   if (instaView) {
+  //     win.contentView.removeChildView(instaView);
+  //     instaView = null;
+  //   }
+  // }
+};

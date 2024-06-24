@@ -36,7 +36,6 @@ class BessyOutput(Messenger):
             label = int(info[2])
             if label >= 0:
                 self.store.set("trial_complete", label)
-                print("TRIAL COMPLETE!!")
                 # self.trial_complete.emit(label)
 
     def prediction(self, prediction: Prediction):
@@ -45,4 +44,5 @@ class BessyOutput(Messenger):
         # labels: list[int]               <--- predicted class labels
         # predictions: list[list[float]]  <--- probabilities of labels (one list per predicion)
         for label, probabilities in zip(prediction.labels, prediction.probabilities):
-            self.prediction_complete.emit(int(label), probabilities)
+            # self.prediction_complete.emit(int(label), probabilities)
+            self.store.set("prediction_complete", (int(label), probabilities))

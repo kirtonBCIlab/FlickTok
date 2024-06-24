@@ -1,0 +1,52 @@
+---
+const { ...props } = Astro.props;
+---
+
+<predict-btn {...props}></predict-btn>
+
+<script>
+  import globalStore from "/src/stores/global.store.js";
+
+  class PredictBtn extends HTMLElement {
+    constructor() {
+      super();
+
+      this.classList.add("btn", "btn-neutral");
+
+      globalStore.ui.predictionBtn.state = "running";
+      // globalStore.ui.predictionBtn.state =
+      //   globalStore.ui.predictionState.state === "stop" ? "running" : "idle";
+      this.toggleBtnState();
+    }
+
+    toggleBtnState() {
+      if (globalStore.ui.predictionBtn.state === "idle") {
+        globalStore.ui.predictionBtn = {
+          text: "Stop predictions",
+          state: "running",
+        };
+      } else if (globalStore.ui.predictionBtn.state === "running") {
+        globalStore.ui.predictionBtn = {
+          text: "Start predictions",
+          state: "idle",
+        };
+      }
+      this.innerHTML = globalStore.ui.predictionBtn.text;
+    }
+
+    handleClick() {
+      // @ts-ignore
+      window.api.send("toMain", {
+        id: "set-prediction-btn-state",
+        data: globalStore.ui.predictionBtn.state === "idle" ? "start" : "stop",
+      });
+      this.toggleBtnState();
+    }
+
+    connectedCallback() {
+      this.addEventListener("click", this.handleClick);
+    }
+  }
+
+  customElements.define("predict-btn", PredictBtn);
+</script>

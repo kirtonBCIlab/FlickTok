@@ -67,5 +67,6 @@ class Store:
 
     # Aliases
     dispatch = publish
+    emit = publish
     on = subscribe
     off = unsubscribe

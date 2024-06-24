@@ -1,0 +1,51 @@
+---
+const { ...props } = Astro.props;
+---
+
+<training-btn {...props}></training-btn>
+
+<script>
+  import globalStore from "/src/stores/global.store.js";
+
+  class TrainingBtn extends HTMLElement {
+    constructor() {
+      super();
+
+      this.classList.add("btn", "btn-neutral");
+
+      globalStore.ui.trainingBtn.state = "running";
+      // globalStore.ui.trainingState.state ===
+      this.toggleBtnState();
+    }
+
+    toggleBtnState() {
+      if (globalStore.ui.trainingBtn.state === "idle") {
+        globalStore.ui.trainingBtn = {
+          text: "Stop Training",
+          state: "running",
+        };
+      } else if (globalStore.ui.trainingBtn.state === "running") {
+        globalStore.ui.trainingBtn = {
+          text: "Start Training",
+          state: "idle",
+        };
+      }
+      this.innerHTML = globalStore.ui.trainingBtn.text;
+    }
+
+    handleClick() {
+      // @ts-ignore
+      window.api.send("toMain", {
+        id: "set-training-btn-state",
+        data: globalStore.ui.trainingBtn.state === "idle" ? "start" : "stop",
+      });
+      this.toggleBtnState();
+    }
+
+    connectedCallback() {
+      this.addEventListener("click", this.handleClick);
+    }
+  }
+
+  customElements.define("training-btn", TrainingBtn);
+</script>

@@ -1,0 +1,35 @@
+---
+import PrototypeLayout from "../components/layouts/PrototypeLayout.astro";
+import ConnectionLostRedirect from "../components/ConnectionLostModal/ConnectionLostRedirect.astro";
+import PredictBtn from "../components/Prediction/PredictBtn.astro";
+import PredictionScreen from "../components/Prediction/PredictionScreen.astro";
+---
+
+<PrototypeLayout title="Predict">
+  <div class="flex p-2" slot="header">
+    <div class="flex-1">
+      <div class="flex h-full items-center justify-center">
+        <PredictBtn />
+      </div>
+    </div>
+    <div class="flex-1">
+      <div class="flex flex-col h-full items-center justify-center">
+        <span id="prediction-state-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <PredictionScreen />
+
+  <div class="flex pt-3" slot="footer">
+    <div class="flex-1">
+      <div class="flex h-full items-center justify-center">
+        <a class="btn" href="javascript:history.back()">Back</a>
+      </div>
+    </div>
+    <div class="flex-1">
+      <div class="flex flex-col h-full items-center justify-center"></div>
+    </div>
+  </div>
+  <ConnectionLostRedirect />
+</PrototypeLayout>

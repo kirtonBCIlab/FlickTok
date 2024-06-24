@@ -1,24 +1,27 @@
 ---
 import PrototypeLayout from "../components/layouts/PrototypeLayout.astro";
+import ConnectionLostRedirect from "../components/ConnectionLostModal/ConnectionLostRedirect.astro";
+import TrainingBtn from "../components/Training/TrainingBtn.astro";
+import TrainingScreen from "../components/Training/TrainingScreen.astro";
 ---
 
 <PrototypeLayout title="Training">
   <div class="flex p-2" slot="header">
     <div class="flex-1">
       <div class="flex h-full items-center justify-center">
-        <training-btn></training-btn>
+        <TrainingBtn />
       </div>
     </div>
     <div class="flex-1">
       <div class="flex flex-col h-full items-center justify-center">
-        <span>Training stopped</span>
+        <span id="training-state-text"></span>
       </div>
     </div>
   </div>
 
-  <section class="w-full h-[calc(100%-85px-40px)] bg-slate-500"></section>
+  <TrainingScreen />
 
-  <div class="flex p-2" slot="footer">
+  <div class="flex pt-3" slot="footer">
     <div class="flex-1">
       <div class="flex h-full items-center justify-center">
         <a class="btn" href="/">Back</a>
@@ -30,49 +33,5 @@ import PrototypeLayout from "../components/layouts/PrototypeLayout.astro";
       </div>
     </div>
   </div>
-  <script>
-    import globalStore from "../stores/global.store.js";
-
-    class TrainingBtn extends HTMLElement {
-      constructor() {
-        super();
-
-        globalStore.ui.trainingBtn = {
-          text: "Start Training",
-          state: "idle",
-        };
-        this.classList.add("btn", "btn-neutral");
-        this.innerHTML = globalStore.ui.trainingBtn.text;
-      }
-
-      toggleBtnState() {
-        if (globalStore.ui.trainingBtn.state === "idle") {
-          globalStore.ui.trainingBtn = {
-            text: "Stop Training",
-            state: "running",
-          };
-        } else if (globalStore.ui.trainingBtn.state === "running") {
-          globalStore.ui.trainingBtn = {
-            text: "Start Training",
-            state: "idle",
-          };
-        }
-        this.innerHTML = globalStore.ui.trainingBtn.text;
-      }
-
-      handleClick() {
-        window.api.send("toMain", {
-          id: "set-training-btn-state",
-          data: globalStore.ui.trainingBtn.state === "idle" ? "start" : "stop",
-        });
-        this.toggleBtnState();
-      }
-
-      connectedCallback() {
-        this.addEventListener("click", this.handleClick);
-      }
-    }
-
-    customElements.define("training-btn", TrainingBtn);
-  </script>
+  <ConnectionLostRedirect />
 </PrototypeLayout>

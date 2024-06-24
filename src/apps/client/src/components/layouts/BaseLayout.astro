@@ -2,6 +2,9 @@
 /** General */
 import { ViewTransitions } from "astro:transitions";
 
+/** Components */
+import ConnectionLostAlert from "../ConnectionLostModal/ConnectionLostAlert.astro";
+
 /** Props */
 const { title, description, ...props } = Astro.props;
 ---
@@ -16,40 +19,41 @@ const { title, description, ...props } = Astro.props;
     <title>{title} | Flicktok</title>
     <ViewTransitions />
   </head>
-  <body
-    id="root"
-    class="w-full h-full min-w-min min-h-min border-slate-900 border-4 relative"
-  >
+  <body id="root" class="w-full h-full min-w-min min-h-min container">
+    <ConnectionLostAlert id="connection-alert" transition:persist />
     <slot />
     <script type="module">
-      // @ts-nocheck
-      import IPCEventHandler from "/src/lib/IPCEventHandler.js";
+      // import IPCEventHandler from "/src/lib/IPCEventHandler.js";
       import globalStore from "/src/stores/global.store.js";
 
       globalStore.__fns.initialize();
+
+      const alert = document.querySelector("#connection-alert");
+      if (!globalStore.connectedToServer) alert.showModal();
+
+      globalStore.__fns.subscribeKey("connectedToServer", (value) => {
+        if (!value) alert.showModal();
+        else alert.close();
+      });
 
       const cb = () => {
         if (typeof window.api === "undefined") return;
         window.api.receive("fromMain", (data) => {
           console.info("Received from main process:", data);
-          IPCEventHandler(data);
+          // IPCEventHandler(data);
         });
       };
       document.addEventListener("astro:page-load", cb, { once: true });
 
       document.addEventListener("astro:after-swap", () => {
         if (typeof window.api === "undefined") return;
+        globalStore.page =
+          new URL(window.location.href).pathname.slice(1) || "index";
         window.api.send("toMain", {
           id: "navigated-to",
           data: { url: window.location.href },
         });
       });
-
-      // // Clear event listeners on page unload
-      // document.addEventListener("astro:before-swap", () => {
-      //   document.removeEventListener("astro:page-load", cb);
-      //   document.removeEventListener("astro:before-swap", this);
-      // });
     </script>
   </body>
 </html>

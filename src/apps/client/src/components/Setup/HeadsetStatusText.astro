@@ -1,0 +1,32 @@
+---
+const { ...props } = Astro.props;
+---
+
+<headset-status-text {...props}></headset-status-text>
+<script>
+  import globalStore from "/src/stores/global.store.js";
+
+  class HeadsetStatusText extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    setHeadsetStatus(value) {
+      this.innerText = value ? "Connected" : "No EEG available";
+      this.classList.toggle("text-red-500", !value);
+      this.classList.toggle("text-green-500", value);
+      const trainBtn = document.getElementById("train-btn");
+      trainBtn?.classList?.toggle("btn-disabled", !value);
+    }
+
+    connectedCallback() {
+      // Runs when the opening tag is added to the DOM
+      this.setHeadsetStatus(globalStore.eegStreamIsAvailable);
+      globalStore.__fns.subscribeKey("eegStreamIsAvailable", (v) =>
+        this.setHeadsetStatus(v)
+      );
+    }
+  }
+
+  customElements.define("headset-status-text", HeadsetStatusText);
+</script>
