@@ -3,7 +3,7 @@
 ### Requirements
 
 - [conda](https://www.anaconda.com/download/success)
-- [node & npm](https://nodejs.org/)
+- [node.js](https://nodejs.org/)
 - [bun](https://bun.sh/)
 
 **NOTE:** Would recommend using `bun` on Linux, macOS or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) if its native Windows version does not work.
