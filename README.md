@@ -20,7 +20,7 @@ bun dev # or `bun run dev` (concurrently runs the Electron app & Python server)
 # cd src/apps/client && bun dev
 ```
 
-- Can also use `bun start` to start the app without watching for changes ([hot-reloading](https://preview.redd.it/hot-reloading-edit-and-continue-for-flask-v0-pv9ldkgmijr81.gif?width=702&auto=webp&s=2912b0ce833a01871ed941eae514cf1e7388b4d5) is enabled by default **for both the Electron app & Python server**).
+- Can also use `bun start` to start the app without watching for changes ([hot-reloading](https://preview.redd.it/hot-reloading-edit-and-continue-for-flask-v0-pv9ldkgmijr81.gif?width=702&auto=webp&s=2912b0ce833a01871ed941eae514cf1e7388b4d5) / auto restart is enabled by default **for both the Electron app & Python server**).
 - Running the app will simultaneously start the Electron app and the Python server. The real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) libraries for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/).
 - To stop the app, press `Ctrl+C` in the terminal.
 
