@@ -1,6 +1,7 @@
 pyproject.toml
 src/Bessy.py
 src/BessyInput.py
+src/BessyLSLMessenger.py
 src/BessyOutput.py
 src/EmotivEegSource.py
 src/FlickTokModel.py

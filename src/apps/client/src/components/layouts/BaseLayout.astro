@@ -19,7 +19,7 @@ const { title, description, ...props } = Astro.props;
     <title>{title} | Flicktok</title>
     <ViewTransitions />
   </head>
-  <body id="root" class="w-full h-full min-w-min min-h-min container">
+  <body id="root" class="w-full h-full min-w-min min-h-min">
     <ConnectionLostAlert id="connection-alert" transition:persist />
     <slot />
     <script type="module">

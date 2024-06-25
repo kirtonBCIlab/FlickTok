@@ -56,9 +56,9 @@ app.on("ready", () => {
 subscribeKey(ctx, "serversLoaded", (v) => {
   if (!v) return;
 
-  // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
-  win.loadURL(clientURL); // client loads at http://localhost:8001 by default
+  win.loadURL(clientURL.replace("0.0.0.0", "localhost")); // client loads at http://localhost:8001 by default
 
   win.once("ready-to-show", () => win.show());
   win.on("closed", () => (win = null));
