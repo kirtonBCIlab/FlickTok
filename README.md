@@ -2,7 +2,7 @@
 
 ### Requirements
 
-- [conda](https://www.anaconda.com/download/success) & pip (tested w/ python v3.11.5 but any 3.x should work to get started)
+- [conda](https://www.anaconda.com/download/success)
 - [node & npm](https://nodejs.org/)
 - [bun](https://bun.sh/)
 
@@ -25,7 +25,7 @@ curl http://localhost:8000/api/stop-headset-simulator
 ```
 
 - Can also use `bun start` to start the app without watching for changes ([hot-reloading](https://preview.redd.it/hot-reloading-edit-and-continue-for-flask-v0-pv9ldkgmijr81.gif?width=702&auto=webp&s=2912b0ce833a01871ed941eae514cf1e7388b4d5) / auto restart is enabled by default **for both the Electron app & Python server**).
-- Running the app will simultaneously start the Electron app and the Python server. The real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) libraries for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/). The front-end (what Electron loads up) is written with the [Astro](https://astro.build/) framework.
+- Running the app will simultaneously start the Electron app and the Python server. Real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) libraries for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/). The front-end (what Electron loads up) is written with the [Astro](https://astro.build/) framework.
 - To stop the app, press `Ctrl+C` in the terminal.
 
 ### Overview
@@ -64,7 +64,7 @@ bun dev
 ### Resources
 
 - Astro's editor setup guide: https://docs.astro.build/en/editor-setup/
-- Would highly recommend these VSCode extensions (especially #1, #3 & #4) when working on the front-end (JS) side:
+- Would highly recommend these VSCode extensions (especially #1, #3 #4 & #8) when working on the front-end (JS) side:
   1. https://marketplace.visualstudio.com/items?itemName=kamikillerto.vscode-colorize
   2. https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek
   3. https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
