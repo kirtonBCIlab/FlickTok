@@ -1,5 +1,4 @@
 ## FlickTok Prototype
-
 ---
 
 ## Requirements
@@ -32,3 +31,11 @@ bun dev # or `bun run dev` (concurrently runs the Electron app & Python server)
 
 - The app consists of two parts: an Electron app (apps/client) and a Python server (apps/server).
 - Looks something like this at the time of writing:
+
+
+https://github.com/arazzz/flicktok_testing/assets/33709341/879fae93-9a43-49a8-96e7-ae18bed93977
+
+
+
+https://github.com/arazzz/flicktok_testing/assets/33709341/dd6623be-0868-497b-ad23-e1be29c1ca30
+
