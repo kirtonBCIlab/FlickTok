@@ -50,7 +50,7 @@ If there are conda-related issues with installation, can try setting up and runn
 ```bash
 # Set up Python side
 cd src/apps/server
-conda env create -f ./environment.yml
+conda env create -f environment.yml
 conda activate flicktok_server
 pip install .
 python main.py
