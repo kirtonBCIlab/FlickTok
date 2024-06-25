@@ -60,3 +60,15 @@ cd src/apps/client
 bun install
 bun dev
 ```
+
+### Resources
+
+Would highly recommend these VSCode extensions (especially #1, #3 & #4) when working on the front-end (JS) side:
+1. https://marketplace.visualstudio.com/items?itemName=kamikillerto.vscode-colorize
+2. https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek
+3. https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
+4. https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode
+5. https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag
+6. https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-close-tag
+7. https://marketplace.visualstudio.com/items?itemName=stivo.tailwind-fold
+8. https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
