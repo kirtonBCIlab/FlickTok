@@ -18,13 +18,6 @@ connected_clients = set()  # if we want to keep track of connected clients
 # In-memory pub/sub store
 store = Store(
     eeg_stream_is_available=False,
-    # training_btn_state="",
-    # training_status=None,
-    # trial_complete=False,
-    # prediction_btn_state="",
-    # prediction_status=None,
-    # prediction_complete=False,
-    # action_detected=False,
 )
 
 

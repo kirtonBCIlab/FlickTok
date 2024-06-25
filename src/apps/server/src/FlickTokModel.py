@@ -1,5 +1,4 @@
 import threading
-import time
 import asyncio
 
 from enum import Enum
@@ -10,7 +9,7 @@ from pylsl import resolve_byprop
 from .Bessy import Bessy
 from .EmotivEegSource import EmotivEegSource
 
-from .utils.helpers import delayed_exec, console
+from .utils.helpers import console
 
 
 class TrainingLabels(Enum):
