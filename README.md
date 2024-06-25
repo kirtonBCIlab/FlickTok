@@ -1,5 +1,4 @@
 ## FlickTok Prototype
----
 
 ## Requirements
 
