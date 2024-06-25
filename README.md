@@ -1,6 +1,6 @@
 ## FlickTok Prototype
 
-## Requirements
+### Requirements
 
 - [conda](https://www.anaconda.com/download/success) & pip (tested w/ python v3.11.5 but any 3.x should work to get started)
 - [node & npm](https://nodejs.org/)
@@ -8,7 +8,7 @@
 
 **NOTE:** Would recommend using `bun` on Linux, macOS or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) if its native Windows version does not work.
 
-## Setup & Usage
+### Setup & Usage
 
 ```bash
 git clone https://github.com/arazzz/flicktok_testing.git && cd flicktok_testing && git switch new/prototype-uv-async
@@ -24,7 +24,7 @@ bun dev # or `bun run dev` (concurrently runs the Electron app & Python server)
 - Running the app will simultaneously start the Electron app and the Python server. The real-time communication between them is handled via the [socket.io](https://socket.io/) & [python-socketio](https://python-socketio.readthedocs.io/en/stable/) libraries for websockets. The project structure follows a typical monorepo setup using [Turbo](https://turbo.build/).
 - To stop the app, press `Ctrl+C` in the terminal.
 
-## Overview
+### Overview
 
 ![overview](https://github.com/arazzz/fliktok_testing/assets/33709341/81a025d1-3cd1-42d2-a421-50ccbac643c5)
 
