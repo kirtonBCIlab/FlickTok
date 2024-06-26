@@ -39,22 +39,23 @@ const { ...props } = Astro.props;
       );
 
       globalStore.__fns.subscribe((v) => {
-        this.setBgColor();
-
-        predictionStateText.innerHTML = `${
-          globalStore.ui.predictionState.text[
-            globalStore.ui.predictionState.state
-          ]
-        }`;
-
-        // Set prediction screen header icon image based on state
-        predictionStateIcon.innerHTML = `<img src="${`./public/images/prediction/${globalStore.ui.predictionState.icon[globalStore.ui.predictionState.state]}.png`}" alt="Prediction Icon">`;
+        this.updateState(predictionStateText, predictionStateIcon);
       });
+      this.updateState(predictionStateText, predictionStateIcon);
+    }
+
+    updateState(predictionStateText, predictionStateIcon) {
       this.setBgColor();
-      predictionStateText.innerHTML =
+
+      predictionStateText.innerHTML = `${
         globalStore.ui.predictionState.text[
           globalStore.ui.predictionState.state
-        ];
+        ]
+      }`;
+
+      // Set prediction screen header icon image based on state
+      // @ts-ignore
+      predictionStateIcon.src = `/images/prediction/${globalStore.ui.predictionState.icon[globalStore.ui.predictionState.state]}.png`;
     }
 
     setBgColor() {
