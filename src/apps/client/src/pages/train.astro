@@ -6,7 +6,7 @@ import TrainingScreen from "../components/Training/TrainingScreen.astro";
 ---
 
 <PrototypeLayout title="Training">
-  <div class="flex p-2" slot="header">
+  <div class="flex p-3" slot="header">
     <div class="flex-1">
       <div class="flex h-full items-center justify-center">
         <TrainingBtn />
@@ -19,9 +19,9 @@ import TrainingScreen from "../components/Training/TrainingScreen.astro";
     </div>
   </div>
 
-  <TrainingScreen />
+  <TrainingScreen slot="main" />
 
-  <div class="flex pt-3" slot="footer">
+  <div class="flex p-3" slot="footer">
     <div class="flex-1">
       <div class="flex h-full items-center justify-center">
         <a class="btn" href="/">Back</a>

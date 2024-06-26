@@ -5,6 +5,23 @@ let globalStore = proxy({
   connectedToServer: false,
   eegStreamIsAvailable: false,
   page: "index",
+  settings: {
+    selected: {
+      socialMedia: "instagram",
+    },
+    options: {
+      socialMedia: {
+        instagram: {
+          url: "https://instagram.com/reels",
+          title: "Instagram Reels",
+        },
+        youtube: {
+          url: "https://youtube.com/shorts",
+          title: "YouTube Shorts",
+        },
+      },
+    },
+  },
   ui: {
     trainingBtn: {
       text: "",
@@ -67,8 +84,15 @@ globalStore.__fns.send = (id, data) => {
 };
 
 globalStore.__fns.initialize = () => {
-  window.api.send("toMain", { id: "req:ping" });
-  window.api.send("toMain", { id: "req:eeg-stream-availability" });
+  if (window.api) {
+    window.api.send("toMain", { id: "init" });
+    window.api.send("toMain", { id: "req:eeg-stream-availability" });
+  }
+  if (localStorage.getItem("selected-settings")) {
+    globalStore.settings.selected = JSON.parse(
+      localStorage.getItem("selected-settings")
+    );
+  }
 };
 
 globalStore.__fns.subscribeKey("connectedToServer", (v) => {
@@ -77,10 +101,19 @@ globalStore.__fns.subscribeKey("connectedToServer", (v) => {
   }
 });
 
+globalStore.__fns.subscribe((v) => {
+  if (["settings", "selected"].some((k) => v[0][1].includes(k))) {
+    localStorage.setItem(
+      "selected-settings",
+      JSON.stringify(globalStore.settings.selected)
+    );
+  }
+});
+
 if (window.api) {
   window.api.receive("fromMain", ({ id, data }) => {
     switch (id) {
-      case "py:res:pong":
+      case "py:init":
       case "py:connect":
         globalStore.connectedToServer = true;
         break;
@@ -99,6 +132,7 @@ if (window.api) {
         break;
       case "py:action-detected":
         globalStore.ui.predictionState.state = "actionDetected";
+        break;
     }
   });
 }

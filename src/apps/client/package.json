@@ -17,6 +17,7 @@
     "electron:start:nodemon": "nodemon --watch src/electron --ext js,cjs,mjs,ts,jsx,tsx --exec \"electron .\""
   },
   "dependencies": {
+    "@astrojs/react": "^3.6.0",
     "@astrojs/tailwind": "^5.1.0",
     "assert": "^2.1.0",
     "astro": "^4.10.3",
@@ -27,6 +28,8 @@
     "electron-util": "^0.18.1",
     "lodash": "^4.17.21",
     "prettier": "^3.3.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^3.4.4",

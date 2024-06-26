@@ -2,8 +2,14 @@
 import BaseLayout from "./BaseLayout.astro";
 ---
 
-<BaseLayout {...Astro.props}>
-  <slot name="header" class="sticky top-0 w-full bg-slate-700" />
-  <slot />
-  <slot name="footer" class="sticky bottom-0 w-full bg-slate-700" />
+<BaseLayout class="max-w-2xl min-w-min mx-auto" {...Astro.props}>
+  <header class="w-full flex-2">
+    <slot name="header" />
+  </header>
+  <main class="w-full flex-1">
+    <slot name="main" />
+  </main>
+  <footer class="w-full">
+    <slot name="footer" />
+  </footer>
 </BaseLayout>
