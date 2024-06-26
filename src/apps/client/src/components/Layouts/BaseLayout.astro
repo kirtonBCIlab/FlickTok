@@ -4,9 +4,10 @@ import { ViewTransitions } from "astro:transitions";
 
 /** Components */
 import ConnectionLostAlert from "../ConnectionLostModal/ConnectionLostAlert.astro";
+import DarkModeActivator from "./components/DarkModeActivator";
 
 /** Props */
-const { title, description, ...props } = Astro.props;
+const { title, description, class: className, ...props } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,11 +20,18 @@ const { title, description, ...props } = Astro.props;
     <title>{title} | Flicktok</title>
     <ViewTransitions />
   </head>
-  <body id="root" class="w-full h-full min-w-min min-h-min">
+  <!-- Other themes: https://daisyui.com/docs/themes/ -->
+  <body
+    id="root"
+    class:list={[
+      "w-full h-full min-w-min min-h-min relative flex flex-col",
+      className,
+    ]}
+  >
+    <DarkModeActivator client:only="react" />
     <ConnectionLostAlert id="connection-alert" transition:persist />
     <slot />
     <script type="module">
-      // import IPCEventHandler from "/src/lib/IPCEventHandler.js";
       import globalStore from "/src/stores/global.store.js";
 
       globalStore.__fns.initialize();
@@ -40,7 +48,6 @@ const { title, description, ...props } = Astro.props;
         if (typeof window.api === "undefined") return;
         window.api.receive("fromMain", (data) => {
           console.info("Received from main process:", data);
-          // IPCEventHandler(data);
         });
       };
       document.addEventListener("astro:page-load", cb, { once: true });
@@ -50,7 +57,7 @@ const { title, description, ...props } = Astro.props;
         globalStore.page =
           new URL(window.location.href).pathname.slice(1) || "index";
         window.api.send("toMain", {
-          id: "navigated-to",
+          id: "info:navigated-to",
           data: { url: window.location.href },
         });
       });

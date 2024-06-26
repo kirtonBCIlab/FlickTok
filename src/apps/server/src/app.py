@@ -61,10 +61,10 @@ async def disconnect(sid):
     connected_clients.remove(sid)
 
 
-@sio.on("req:ping")
-async def ping(sid, data={}):
+@sio.on("init")
+async def init(sid, data={}):
     console.log(f"[yellow]Ping...[/yellow]")
-    await sio.emit("fromPython", {"id": "res:pong", "data": {}})
+    await sio.emit("fromPython", {"id": "init", "data": {}})
 
 
 @sio.on("run-fes-test")  # called when the client emits the 'run-fes-test' event

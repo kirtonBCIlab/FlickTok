@@ -50,15 +50,37 @@ const getCurrentReelAsync = async () => {
 };
 
 /**
+ * Checks if a given node is scrollable.
+ *
+ * @param {HTMLElement|SVGElement} node - The node to check.
+ * @return {boolean} Returns true if the node is scrollable, false otherwise.
+ */
+const isScrollable = (node) => {
+  if (!(node instanceof HTMLElement || node instanceof SVGElement)) {
+    return false;
+  }
+  const style = getComputedStyle(node);
+  return ["overflow", "overflow-x", "overflow-y"].some((propertyName) => {
+    const value = style.getPropertyValue(propertyName);
+    return value === "auto" || value === "scroll";
+  });
+};
+
+/**
  * Recursively finds the scrollable parent of a given node.
  *
  * @param {HTMLElement} node - The node to start searching from.
  * @return {HTMLElement|null} The scrollable parent node, or null if none is found.
  */
 const getScrollParent = (node) => {
-  if (node == null) return null;
-  if (node.scrollHeight > node.clientHeight) return node;
-  else return getScrollParent(node.parentNode);
+  let currentParent = node.parentElement;
+  while (currentParent) {
+    if (isScrollable(currentParent)) {
+      return currentParent;
+    }
+    currentParent = currentParent.parentElement;
+  }
+  return document.scrollingElement || document.documentElement;
 };
 
 /**
@@ -75,8 +97,10 @@ const scrollToNextReel = async () => {
 };
 
 window.onload = () => {
-  window.scrollTo(0, 0);
-  document.body.scrollIntoView();
+  getCurrentReelAsync().then(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollIntoView();
+  });
 
   ipcRenderer.on("fromMain", async (event, payload) => {
     console.info(event, payload);

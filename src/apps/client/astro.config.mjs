@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import { monoConfig } from "./src/config/paths";
 import tailwind from "@astrojs/tailwind";
+import react from '@astrojs/react';
 const host = monoConfig.client.host || "0.0.0.0";
 const port = monoConfig.client.port || 8001;
 
@@ -14,5 +15,5 @@ export default defineConfig({
     host,
     port,
   },
-  integrations: [tailwind()],
+  integrations: [react(), tailwind()],
 });
