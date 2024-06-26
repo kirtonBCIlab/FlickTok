@@ -34,14 +34,21 @@ const { ...props } = Astro.props;
       const predictionStateText = document.getElementById(
         "prediction-state-text"
       );
+      const predictionStateIcon = document.getElementById(
+        "prediction-state-icon"
+      );
 
       globalStore.__fns.subscribe((v) => {
         this.setBgColor();
+
         predictionStateText.innerHTML = `${
           globalStore.ui.predictionState.text[
             globalStore.ui.predictionState.state
           ]
         }`;
+
+        // Set prediction screen header icon image based on state
+        predictionStateIcon.innerHTML = `<img src="${`./public/images/prediction/${globalStore.ui.predictionState.icon[globalStore.ui.predictionState.state]}.png`}" alt="Prediction Icon">`;
       });
       this.setBgColor();
       predictionStateText.innerHTML =

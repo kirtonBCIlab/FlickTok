@@ -1,8 +1,11 @@
 ---
 const { ...props } = Astro.props;
+import TrainingScreenIcon from "./TrainingScreenIcon.astro";
 ---
 
-<training-screen {...props}></training-screen>
+<training-screen {...props}>
+  <TrainingScreenIcon id="training-state-icon" />
+</training-screen>
 <script>
   import globalStore from "/src/stores/global.store.js";
 
@@ -13,12 +16,17 @@ const { ...props } = Astro.props;
       this.className = "w-full h-full flex items-center justify-center";
 
       const trainingStateText = document.getElementById("training-state-text");
+      const trainingStateIcon = document.getElementById("training-state-icon");
 
       globalStore.__fns.subscribe((v) => {
         this.setBgColor();
+
         trainingStateText.innerHTML = `${
           globalStore.ui.trainingState.text[globalStore.ui.trainingState.state]
         } ${["rest", "action"].includes(globalStore.ui.trainingState.state) ? globalStore.ui.trainingState.trialCount : ""}`;
+
+        // Set training icon image based on state
+        trainingStateIcon.innerHTML = `<img src="${`./public/images/training/${globalStore.ui.trainingState.icon[globalStore.ui.trainingState.state]}.png`}" alt="Training Icon">`;
       });
       this.setBgColor();
       trainingStateText.innerHTML =

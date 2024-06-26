@@ -1,0 +1,29 @@
+---
+const { ...props } = Astro.props;
+---
+
+<prediction-header-icon {...props}></prediction-header-icon>
+<script>
+  import globalStore from "/src/stores/global.store.js";
+  class PredictionHeaderIcon extends HTMLElement {
+    constructor() {
+      super();
+
+      // Need to ensure that the icon images are the same size so the header doesn't jump around
+      // It would be better to adjust the size of the icon images; this is a temporary solution
+      this.className = "max-w-10 max-h-10 min-w-10 min-h-10";
+    }
+
+    connectedCallback() {
+      this.render();
+    }
+
+    render() {
+      const src = `./public/images/prediction/${globalStore.ui.predictionState.icon[globalStore.ui.predictionState.state]}.png`; // Adjust the path as needed
+
+      this.innerHTML = `<img src="${src}" alt="Prediction Icon">`;
+    }
+  }
+
+  customElements.define("prediction-header-icon", PredictionHeaderIcon);
+</script>
