@@ -11,7 +11,7 @@
 ### Setup & Usage
 
 ```bash
-git clone https://github.com/arazzz/flicktok_testing.git && cd flicktok_testing && git switch new/prototype-uv-async
+git clone https://github.com/arazzz/flicktok_testing.git && cd flicktok_testing
 bun install
 bun dev # or `bun run dev` (concurrently runs the Electron app & Python server)
 
