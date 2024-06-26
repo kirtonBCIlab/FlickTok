@@ -4,7 +4,8 @@ import asyncio
 from enum import Enum
 from dataclasses import dataclass
 
-from pylsl import resolve_byprop
+# from pylsl import resolve_byprop
+from pylsl import ContinuousResolver
 
 from .Bessy import Bessy
 from .EmotivEegSource import EmotivEegSource
@@ -59,13 +60,15 @@ class FlickTokModel:
         self.__initialize_bessy()
 
     def __check_for_eeg_streams(self):
-        streams = resolve_byprop("type", "EEG", 0, 0.1)
+        # streams = resolve_byprop("type", "EEG", 0, 0.1)
+        streams = self.__eeg_stream_resolver.results()
         self.eeg_stream_is_available = len(streams) > 0
         self.store.set("eeg_stream_is_available", self.eeg_stream_is_available)
         # Restart the timer for continuous checking
         self.__initialize_eeg_scanning()
 
     def __initialize_eeg_scanning(self):
+        self.__eeg_stream_resolver = ContinuousResolver("type", "EEG")
         self.eeg_scan_timer = threading.Timer(
             self.eeg_scan_seconds, self.__check_for_eeg_streams
         )
