@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5",
-    "turbo": "latest"
+    "turbo": "^2.0.5"
   },
   "packageManager": "bun@1.1.10",
   "workspaces": [
