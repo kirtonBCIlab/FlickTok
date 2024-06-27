@@ -5,7 +5,9 @@ const { ...props } = Astro.props;
 <training-btn {...props}></training-btn>
 
 <script>
+  // @ts-nocheck
   import globalStore from "/src/stores/global.store.js";
+  import { subscribeKey } from "valtio/utils";
 
   class TrainingBtn extends HTMLElement {
     constructor() {
@@ -14,8 +16,16 @@ const { ...props } = Astro.props;
       this.classList.add("btn", "btn-neutral");
 
       globalStore.ui.trainingBtn.state = "running";
-      // globalStore.ui.trainingState.state ===
+
       this.toggleBtnState();
+
+      this.trainingStateListener = subscribeKey(
+        globalStore.ui.trainingState,
+        "state",
+        (v) => {
+          if (v === "complete") this.toggleBtnState();
+        }
+      );
     }
 
     toggleBtnState() {
@@ -44,6 +54,11 @@ const { ...props } = Astro.props;
 
     connectedCallback() {
       this.addEventListener("click", this.handleClick);
+    }
+
+    disconnectedCallback() {
+      this.trainingStateListener(); // unsubscribe on element removal
+      // this.removeEventListener("click", this.handleClick);
     }
   }
 

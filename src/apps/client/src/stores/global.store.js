@@ -90,6 +90,7 @@ let globalStore = proxy({
 
 globalStore.__fns.set = (key, value) => (globalStore[key] = value);
 globalStore.__fns.get = (key) => globalStore[key];
+globalStore.__fns.subscribeKeyValtio = subscribeKey;
 globalStore.__fns.subscribeKey = (key, fn) =>
   subscribeKey(globalStore, key, fn);
 globalStore.__fns.subscribe = (fn) => subscribe(globalStore, fn);
