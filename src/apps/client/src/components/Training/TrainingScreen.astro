@@ -37,8 +37,10 @@ const { ...props } = Astro.props;
         globalStore.ui.trainingState.text[globalStore.ui.trainingState.state]
       } ${["rest", "action"].includes(globalStore.ui.trainingState.state) ? globalStore.ui.trainingState.trialCount : ""}`;
 
-      // Set training icon image based on state
-      trainingStateIcon.src = `/images/training/${globalStore.ui.trainingState.icon[globalStore.ui.trainingState.state]}.png`;
+      // Set training icon image based on state and selected movement
+      const movementSelected = globalStore.settings.selected.movement;
+      const trainingState = globalStore.ui.trainingState.state;
+      trainingStateIcon.src = `/images/training/${globalStore.ui.trainingState.icon[movementSelected][trainingState]}.png`;
     }
 
     setBgColor() {
