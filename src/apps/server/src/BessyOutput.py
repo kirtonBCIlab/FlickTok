@@ -2,6 +2,8 @@ import asyncio
 from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
+from .utils.helpers import console
+
 
 class BessyOutput(Messenger):
     """BessyOutput is a Messenger object that converts output from Bessy
@@ -38,7 +40,9 @@ class BessyOutput(Messenger):
         if len(info) == 4:
             label = int(info[2])
             if label >= 0:
-                asyncio.run(self.perform_training_step())
+                console.log(f"[green]trial-complete: {label}[/green]")
+                asyncio.create_task(self.perform_training_step())
+                # asyncio.run(self.perform_training_step())
                 # self.store.set("trial_complete", label)
                 # self.trial_complete.emit(label)
 
@@ -51,7 +55,8 @@ class BessyOutput(Messenger):
             # self.prediction_complete.emit(int(label), probabilities)
             # self.store.set("prediction_complete", (int(label), probabilities))
             try:
-                asyncio.run(self.process_prediction(label, probabilities))
+                asyncio.create_task(self.process_prediction(label, probabilities))
+                # asyncio.run(self.process_prediction(label, probabilities))
             except ValueError:
                 # TODO - double check this; process_prediction(label, probabilities) doesn't always return a coroutine?
                 pass
