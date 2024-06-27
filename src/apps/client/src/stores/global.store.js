@@ -119,7 +119,7 @@ let globalStore = proxy({
           stop: "extension-flexion-rest-small",
           rest: "extension-flexion-rest-small",
           action: "flexion-action-small",
-          complete: "celebrate-small",
+          complete: "celebrate",
           actionDetected: "celebrate-small",
         },
         wristExtension: {
