@@ -126,6 +126,7 @@ class FlickTokModel:
                     self.__training_state = TrainingState.Complete
                     await self.__send_training_status()
                     self.__bessy.end_training_session()
+                    self.__bessy.train_classifier()
 
             case TrainingState.Action:
                 await self.__send_training_status()
@@ -154,9 +155,6 @@ class FlickTokModel:
     # action_detected = Signal(bool)
 
     async def start_predicting(self):
-        # TODO - place a guard here if there is no trained bessy
-        self.__bessy.train_classifier()
-
         # Kick off state machine that starts prediction sequence
         self.__prediction_state = PredictionState.Rest
         await self.__perform_prediction_step()
