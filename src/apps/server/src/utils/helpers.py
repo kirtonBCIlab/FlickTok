@@ -46,7 +46,6 @@ class CustomTimer:
         self.kwargs = kwargs
         self.timer = None
         self.is_running = False
-        self.start()
 
     def _run(self):
         self.is_running = False
