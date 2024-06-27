@@ -8,6 +8,7 @@ let globalStore = proxy({
   settings: {
     selected: {
       socialMedia: "instagram",
+      movement: "none",
     },
     options: {
       socialMedia: {
@@ -20,6 +21,12 @@ let globalStore = proxy({
           title: "YouTube Shorts",
         },
       },
+      movement: {
+        thumbAviduction: "Thumb Aviduction",
+        flexion: "Flexion",
+        wristExtension: "Wrist Extension",
+        none: "None",
+      }
     },
   },
   ui: {
@@ -98,6 +105,86 @@ globalStore.__fns.send = (id, data) => {
   window.api.send("toMain", { id, data });
 };
 
+// Define icon mappings
+const movementIcons = {
+  thumbAviduction: {
+    training: {
+      start: "thumb-avi-rest",
+      stop: "thumb-avi-rest",
+      rest: "thumb-avi-rest",
+      action: "thumb-avi-action",
+      complete: "celebrate",
+    },
+    prediction: {
+      start: "thumb-avi-rest-small",
+      stop: "thumb-avi-rest-small",
+      rest: "thumb-avi-rest-small",
+      action: "thumb-avi-action-small",
+      actionDetected: "celebrate-small",
+    },
+  },
+  flexion: {
+    training: {
+      start: "extension-flexion-rest",
+      stop: "extension-flexion-rest",
+      rest: "extension-flexion-rest",
+      action: "flexion-action",
+      complete: "celebrate",
+    },
+    prediction: {
+      start: "extension-flexion-rest-small",
+      stop: "extension-flexion-rest-small",
+      rest: "extension-flexion-rest-small",
+      action: "flexion-action-small",
+      actionDetected: "celebrate-small",
+    },
+  },
+  wristExtension: {
+    training: {
+      start: "extension-flexion-rest",
+      stop: "extension-flexion-rest",
+      rest: "extension-flexion-rest",
+      action: "extenstion-action",
+      complete: "celebrate",
+    },
+    prediction: {
+      start: "extension-flexion-rest-small",
+      stop: "extension-flexion-rest-small",
+      rest: "extension-flexion-rest-small",
+      action: "extenstion-action-small",
+      actionDetected: "celebrate-small",
+    },
+  },
+  none: {
+    training: {
+      start: "empty",
+      stop: "empty",
+      rest: "empty",
+      action: "empty",
+      complete: "celebrate",
+    },
+    prediction: {
+      start: "empty",
+      stop: "empty",
+      rest: "empty",
+      action: "empty",
+      actionDetected: "celebrate-small",
+    },
+  },
+};
+
+// Function to update icons based on selected movement
+globalStore.__fns.updateIcons = (movement) => {
+  const icons = movementIcons[movement] || movementIcons.none;
+  globalStore.ui.trainingState.icon = icons.training;
+  globalStore.ui.predictionState.icon = icons.prediction;
+};
+
+// Subscribe to changes in the movement value
+globalStore.__fns.subscribeKey("settings.selected.movement", (movement) => {
+  globalStore.__fns.updateIcons(movement);
+});
+
 globalStore.__fns.initialize = () => {
   if (window.api) {
     window.api.send("toMain", { id: "init" });
@@ -108,6 +195,8 @@ globalStore.__fns.initialize = () => {
       localStorage.getItem("selected-settings")
     );
   }
+  // Initialize icons based on the current movement
+  globalStore.__fns.updateIcons(globalStore.settings.selected.movement);
 };
 
 globalStore.__fns.subscribeKey("connectedToServer", (v) => {
@@ -123,6 +212,10 @@ globalStore.__fns.subscribe((v) => {
       JSON.stringify(globalStore.settings.selected)
     );
   }
+});
+
+globalStore.__fns.subscribeKey("settings.selected.movement", (movement) => {
+  globalStore.__fns.updateIcons(movement);
 });
 
 if (window.api) {
