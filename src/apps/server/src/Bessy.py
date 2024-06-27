@@ -50,6 +50,10 @@ class Bessy:
 
         self.__bessy = None
         self.__eeg_source = None
+
+        self.__stop_event = asyncio.Event()
+        self.__task = None
+
         # self.__loop_timer = QTimer(self)
 
     def connect_eeg_source(self, eeg: EegSource):
@@ -106,18 +110,30 @@ class Bessy:
         # # Start a periodic timer to process messages from bessy.
         # self.__loop_timer.timeout.connect(self.__bessy_step)
         # self.__loop_timer.start(self.__bessy_step_msec)
-        self.__loop_timer = CustomTimer(
-            self.__bessy_step_msec / 1000, self.__bessy_step
-        )
-        self.__loop_timer.start()
+
+        # self.__loop_timer = CustomTimer(
+        #     self.__bessy_step_msec / 1000, self.__bessy_step
+        # )
+        # self.__loop_timer.start()
+
+        self.__task = asyncio.create_task(self.__bessy_step_loop())
+
+    async def __bessy_step_loop(self):
+        while not self.__stop_event.is_set():
+            await self.__bessy_step()
+            await asyncio.sleep(self.__bessy_step_msec / 1000)
 
     def __kill_bessy(self):
         # Stop the loop timer and free bessy
         # self.__loop_timer.stop()
         # self.__loop_timer.timeout.disconnect()
-        self.__loop_timer.stop()
-        self.__bessy = None
+
+        # self.__loop_timer.stop()
+        # self.__bessy = None
+        if self.__task:
+            self.__stop_event.set()
+            self.__bessy = None
 
     # This runs one loop of bessy, aka EegData
-    def __bessy_step(self):
+    async def __bessy_step(self):
         self.__bessy.step()
