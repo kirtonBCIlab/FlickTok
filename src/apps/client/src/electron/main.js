@@ -28,7 +28,7 @@ app.on("ready", () => {
   // get screen dimensions
   let { width, height } = screen.getPrimaryDisplay().bounds;
   width *= 0.35;
-  height *= 0.85;
+  height *= 0.95; //changed this from 0.85 (emily)
 
   // create main window
   win = new BrowserWindow({
