@@ -63,7 +63,7 @@ const { ...props } = Astro.props;
       // Set prediction screen header icon image based on state and selected movement
       const movementSelected = globalStore.settings.selected.movement;
       const predictionState = globalStore.ui.predictionState.state;
-      predictionStateIcon.src = `/images/prediction/${globalStore.ui.predictionState.icon[movementSelected][predictionState]}.png`;
+      predictionStateIcon.src = `/images/${globalStore.ui.predictionState.icon[movementSelected][predictionState]}.png`;
     }
 
     setBgColor() {
