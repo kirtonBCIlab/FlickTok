@@ -53,10 +53,10 @@ let globalStore = proxy({
       },
       icon: {
         thumbAviduction: {
-          start: "thumb-avi-rest",
-          stop: "thumb-avi-rest",
-          rest: "thumb-avi-rest",
-          action: "thumb-avi-action",
+          start: "thumb-avi-rest-small",
+          stop: "thumb-avi-rest-small",
+          rest: "thumb-avi-rest-small",
+          action: "thumb-avi-action-small",
           complete: "celebrate",
         },
         flexion: {
