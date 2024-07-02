@@ -20,7 +20,7 @@ const { ...props } = Astro.props;
     });
   };
 
-  if (typeof window.api !== "undefined") loadSocialMedia();
+  //if (typeof window.api !== "undefined") loadSocialMedia();
 </script>
 <script>
   // @ts-nocheck
@@ -51,6 +51,8 @@ const { ...props } = Astro.props;
       const predictionStateIcon = document.getElementById(
         "prediction-state-icon"
       );
+      const overlayImage = document.getElementById("overlay-icon");
+
 
       this.setBgColor();
 
@@ -64,6 +66,7 @@ const { ...props } = Astro.props;
       const movementSelected = globalStore.settings.selected.movement;
       const predictionState = globalStore.ui.predictionState.state;
       predictionStateIcon.src = `/images/${globalStore.ui.predictionState.icon[movementSelected][predictionState]}.png`;
+      overlayImage.src = `/images/${globalStore.ui.predictionState.celebrate[predictionState]}.png`;
     }
 
     setBgColor() {
