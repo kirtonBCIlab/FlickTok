@@ -79,6 +79,9 @@ ipcMain.on("toMain", (event, payload) => {
     case "req:load-social-media":
       loadSocialMedia(event, payload);
       break;
+    case "run-fes-test":
+      runFesTest(event);
+      break;
     default:
       sio.emit(id, data);
       event.sender.send("fromMain", {
@@ -88,6 +91,22 @@ ipcMain.on("toMain", (event, payload) => {
       break;
   }
 });
+
+const runFesTest = async (event) => {
+  try {
+    const response = await axios.post('/run-fes-test');
+    event.sender.send("fromMain", {
+      id: "re:run-fes-test",
+      data: { msg: "FES Test initiated successfully", response: response.data },
+    });
+  } catch (error) {
+    console.error("Error running FES test:", error);
+    event.sender.send("fromMain", {
+      id: "re:run-fes-test",
+      data: { msg: "Error running FES test", error: error.message },
+    });
+  }
+};
 
 ["connect", "disconnect", "fromPython"].forEach((eventName) => {
   sio.on(eventName, (payload) => {

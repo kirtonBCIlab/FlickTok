@@ -12,6 +12,7 @@ from .utils.helpers import fifo_worker, delayed_exec, console, StoppableTask
 from .utils.store import Store
 from .utils.headset_sim_fn import generate_simulated_eeg
 from .FlickTokModel import FlickTokModel
+from .FesDevice import FesDevice
 
 connected_clients = set()  # if we want to keep track of connected clients
 
@@ -20,23 +21,21 @@ store = Store(
     eeg_stream_is_available=False,
 )
 
+fes_device = FesDevice()
 
 async def on_startup(app: FastAPI):
     # Startup logic
     console.log(f"[cyan]Application is starting up...[/cyan]")
 
-
 async def on_shutdown(app: FastAPI):
     # Shutdown logic
     console.log(f"[cyan]Application is shutting down...[/cyan]")
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await on_startup(app)
     yield
     await on_shutdown(app)
-
 
 fastapp = FastAPI(lifespan=lifespan)
 fastapp.add_middleware(CORSMiddleware, allow_origins=["*"])
@@ -47,36 +46,35 @@ app = socketio.ASGIApp(sio, other_asgi_app=fastapp)
 # Models
 flicktok_model = FlickTokModel(store, sio)
 
-
 @sio.event  # called when a client connects
 async def connect(sid, environ):
     console.log(f"[green]Client connected: {sid}[/green]")
     connected_clients.add(sid)
     await sio.emit("connected", {}, room=sid)
 
-
 @sio.event  # called when a client disconnects
 async def disconnect(sid):
     console.log(f"[red]Client disconnected: {sid}[/red]")
     connected_clients.remove(sid)
-
 
 @sio.on("init")
 async def init(sid, data={}):
     console.log(f"[yellow]Ping...[/yellow]")
     await sio.emit("fromPython", {"id": "init", "data": {}})
 
-
 @sio.on("run-fes-test")  # called when the client emits the 'run-fes-test' event
 async def run_fes_test(sid, data):
     console.log(f"[cyan]Running FES test...[/cyan]")
-
+    await fes_device.swipe()
+    if fes_device.is_available():
+        await sio.emit("fromPython", {"id": "run-fes-test", "data": {"status": "success", "message": "FES device found and swiped"}}, room=sid)
+    else:
+        await sio.emit("fromPython", {"id": "run-fes-test", "data": {"status": "error", "message": "FES device not found"}}, room=sid)
 
 # Healthcheck endpoint to verify the http server is running
 @fastapp.get("/api/healthcheck")
 async def healthcheck():
     return {"status": "ok"}
-
 
 # region Simulated headset controls
 @fastapp.get("/api/start-headset-simulator")
@@ -85,15 +83,12 @@ async def start_headset_simulator(background_tasks: BackgroundTasks):
         background_tasks.add_task(generate_simulated_eeg, store)
     return {"msg": "Simulating headset data..."}
 
-
 @fastapp.get("/api/stop-headset-simulator")
 async def stop_headset_simulator():
     store.publish("stop-headset-simulator")
     return {"msg": "Stopping simulated headset data..."}
 
-
 # endregion
-
 
 # region Listen for & notify clients of eeg stream availability changes
 @sio.on("req:eeg-stream-availability")
@@ -105,7 +100,6 @@ async def req_eeg_stream_availability(sid, data):
             "data": {"value": store.get("eeg_stream_is_available")},
         },
     )
-
 
 def notify_client_of_eeg_stream_availability(payload):
     console.log(f"[green]eeg_stream_is_available: {payload}[/green]")
@@ -119,10 +113,8 @@ def notify_client_of_eeg_stream_availability(payload):
         )
     )
 
-
 store.on_change("eeg_stream_is_available", notify_client_of_eeg_stream_availability)
 # endregion
-
 
 # region Training & prediction controls
 @sio.on("set-training-btn-state")
@@ -132,14 +124,10 @@ async def set_training_btn_state(sid, value):
     elif value == "stop":
         await flicktok_model.stop_training()
 
-
 @sio.on("set-prediction-btn-state")
 async def set_prediction_btn_state(sid, value):
-    # store.set("prediction_btn_state", value)  # "start" or "stop"
     if value == "start":
         await flicktok_model.start_predicting()
     elif value == "stop":
         await flicktok_model.stop_predicting()
-
-
 # endregion
