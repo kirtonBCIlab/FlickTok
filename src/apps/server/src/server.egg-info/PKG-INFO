@@ -12,3 +12,4 @@ Requires-Dist: python-socketio
 Requires-Dist: pyyaml
 Requires-Dist: rich
 Requires-Dist: numpy
+Requires-Dist: pyserial
