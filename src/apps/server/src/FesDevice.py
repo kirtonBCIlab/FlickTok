@@ -15,12 +15,12 @@ class FesDevice:
         # TODO - this will cause a delay on the first swipe, consider putting into
         # a "connect" function.  Can't put into init unless we want that to be async.
         if self.__device is None:
-            self.device = await self.__find_fes_serial_device()
+            self.__device = await self.__find_fes_serial_device()
 
         # write to serial port to trigger swipe
         if self.__device:
             try:
-                self.__device.write("1")
+                self.__device.write(b"1")
 
             except Exception as e:
                 print("FesDevice: write failed due to ", e)
@@ -35,7 +35,7 @@ class FesDevice:
                     device = Serial(port.name, timeout=1.0, baudrate=115200)
 
                     # Need a bit of a delay for the device to connect
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(1.0)
 
                     device.write(b"?\r\n")
                     response = device.readline()
