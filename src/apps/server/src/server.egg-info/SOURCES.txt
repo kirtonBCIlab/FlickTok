@@ -4,6 +4,7 @@ src/BessyInput.py
 src/BessyLSLMessenger.py
 src/BessyOutput.py
 src/EmotivEegSource.py
+src/FesDevice.py
 src/FlickTokModel.py
 src/app.py
 src/server.egg-info/PKG-INFO

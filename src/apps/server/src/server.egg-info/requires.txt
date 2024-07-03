@@ -6,3 +6,4 @@ python-socketio
 pyyaml
 rich
 numpy
+pyserial

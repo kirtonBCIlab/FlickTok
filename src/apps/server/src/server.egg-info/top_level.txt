@@ -3,6 +3,7 @@ BessyInput
 BessyLSLMessenger
 BessyOutput
 EmotivEegSource
+FesDevice
 FlickTokModel
 app
 utils

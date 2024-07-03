@@ -70,6 +70,7 @@ async def init(sid, data={}):
 @sio.on("run-fes-test")  # called when the client emits the 'run-fes-test' event
 async def run_fes_test(sid, data):
     console.log(f"[cyan]Running FES test...[/cyan]")
+    await flicktok_model.perform_fes_swipe()
 
 
 # Healthcheck endpoint to verify the http server is running

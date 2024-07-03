@@ -9,6 +9,7 @@ from pylsl import ContinuousResolver
 
 from .Bessy import Bessy
 from .EmotivEegSource import EmotivEegSource
+from .FesDevice import FesDevice
 
 from .utils.helpers import console
 
@@ -57,6 +58,7 @@ class FlickTokModel:
         self.prediction_seconds = 1
 
         self.__initialize_eeg_scanning()
+        self.__initialize_fes_device()
         self.__initialize_bessy()
 
     def __check_for_eeg_streams(self):
@@ -73,6 +75,12 @@ class FlickTokModel:
             self.eeg_scan_seconds, self.__check_for_eeg_streams
         )
         self.eeg_scan_timer.start()
+
+    def __initialize_fes_device(self):
+        self.__fes_device = FesDevice()
+
+    async def perform_fes_swipe(self):
+        await self.__fes_device.swipe()
 
     async def start_training(self):
         # Initialize Bessy and connect an Eeg source (note - init freezes if stream not available).
@@ -200,6 +208,7 @@ class FlickTokModel:
         if label == TrainingLabels.Action.value:
             # self.action_detected.emit(True)
             # self.store.emit("action_detected", True)
+            await self.perform_fes_swipe()
             await self.sio.emit(
                 "fromPython", {"id": "action-detected", "data": {"value": True}}
             )
