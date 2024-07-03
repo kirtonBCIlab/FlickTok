@@ -1,14 +1,29 @@
 ---
 import HeadsetStatusText from "./HeadsetStatusText.astro";
-
 const { ...props } = Astro.props;
 ---
-
 <div class="flex p-3" {...props}>
   <div class="flex-1">
     <div class="flex flex-col h-full items-center justify-center">
       <h6>Headset Status:</h6>
       <HeadsetStatusText />
+    </div>
+  </div>
+  <div class="flex-1">
+    <div class="flex flex-col h-full items-center justify-center">
+      <div class="flex items-center space-x-4">
+        <div>
+          <h6>FES System:</h6>
+        </div>
+        <div>
+          <button
+            class="btn btn-neutral"
+            onclick="window.api.send('toMain', { id: 'run-fes-test'})"
+          >
+            Run Test
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
