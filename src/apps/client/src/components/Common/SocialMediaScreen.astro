@@ -1,0 +1,34 @@
+<social-media-screen></social-media-screen>
+
+<script>
+  // @ts-nocheck
+  import globalStore from "/src/stores/global.store.js";
+
+  class SocialMediaScreen extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      if (typeof window.api !== "undefined")
+        window.api.send("toMain", {
+          id: "req:load-social-media",
+          data: {
+            socialMediaURL:
+              globalStore.settings.options.socialMedia[
+                globalStore.settings.selected.socialMedia
+              ].url,
+          },
+        });
+    }
+
+    disconnectedCallback() {
+      if (typeof window.api !== "undefined")
+        window.api.send("toMain", {
+          id: "req:unload-social-media",
+        });
+    }
+  }
+
+  customElements.define("social-media-screen", SocialMediaScreen);
+</script>

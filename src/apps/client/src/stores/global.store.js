@@ -8,6 +8,7 @@ let globalStore = proxy({
   settings: {
     selected: {
       socialMedia: "instagram",
+      movement: "none",
     },
     options: {
       socialMedia: {
@@ -20,9 +21,19 @@ let globalStore = proxy({
           title: "YouTube Shorts",
         },
       },
+      movement: {
+        thumbAviduction: "Thumb Aviduction",
+        flexion: "Flexion",
+        wristExtension: "Wrist Extension",
+        none: "None",
+      },
     },
   },
   ui: {
+    videoState: {
+      isPlaying: false,
+    },
+
     trainingBtn: {
       text: "",
       state: "",
@@ -45,10 +56,40 @@ let globalStore = proxy({
         complete: "Training complete",
       },
       icon: {
-        start: "thumb-avi-rest",
-        stop: "thumb-avi-rest",
-        rest: "thumb-avi-rest",
-        action: "thumb-avi-action",
+        thumbAviduction: {
+          start: "thumb-rest",
+          stop: "thumb-rest",
+          rest: "thumb-rest",
+          action: "thumb-action",
+          complete: "empty",
+        },
+        flexion: {
+          start: "extension-flexion-rest",
+          stop: "extension-flexion-rest",
+          rest: "extension-flexion-rest",
+          action: "flexion-action",
+          complete: "empty",
+        },
+        wristExtension: {
+          start: "extension-flexion-rest",
+          stop: "extension-flexion-rest",
+          rest: "extension-flexion-rest",
+          action: "extenstion-action",
+          complete: "empty",
+        },
+        none: {
+          start: "empty",
+          stop: "empty",
+          rest: "empty",
+          action: "empty",
+          complete: "empty",
+        },
+      },
+      celebrate: {
+        start: "empty",
+        stop: "empty",
+        rest: "empty",
+        action: "empty",
         complete: "celebrate",
       },
     },
@@ -76,11 +117,46 @@ let globalStore = proxy({
         complete: "Predictions complete",
       },
       icon: {
-        start: "thumb-avi-rest-small",
-        stop: "thumb-avi-rest-small",
-        rest: "thumb-avi-rest-small",
-        action: "thumb-avi-action-small",
-        actionDetected: "celebrate-small",
+        thumbAviduction: {
+          start: "thumb-rest",
+          stop: "thumb-rest",
+          rest: "thumb-rest",
+          action: "thumb-action",
+          complete: "empty",
+          actionDetected: "empty",
+        },
+        flexion: {
+          start: "extension-flexion-rest",
+          stop: "extension-flexion-rest",
+          rest: "extension-flexion-rest",
+          action: "flexion-action",
+          complete: "empty",
+          actionDetected: "empty",
+        },
+        wristExtension: {
+          start: "extension-flexion-rest",
+          stop: "extension-flexion-rest",
+          rest: "extension-flexion-rest",
+          action: "extenstion-action",
+          complete: "empty",
+          actionDetected: "empty",
+        },
+        none: {
+          start: "empty",
+          stop: "empty",
+          rest: "empty",
+          action: "empty",
+          complete: "empty",
+          actionDetected: "empty",
+        },
+      },
+      celebrate: {
+        start: "empty",
+        stop: "empty",
+        rest: "empty",
+        action: "empty",
+        complete: "celebrate",
+        actionDetected: "celebrate",
       },
     },
   },
@@ -147,6 +223,9 @@ if (window.api) {
         break;
       case "py:action-detected":
         globalStore.ui.predictionState.state = "actionDetected";
+        break;
+      case "info:video-playing":
+        globalStore.ui.videoState.isPlaying = data.value;
         break;
     }
   });

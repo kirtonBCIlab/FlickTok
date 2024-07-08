@@ -100,6 +100,10 @@ window.onload = () => {
   getCurrentReelAsync().then(() => {
     window.scrollTo(0, 0);
     document.body.scrollIntoView();
+    ipcRenderer.send("toMain", {
+      id: "info:video-playing",
+      data: { value: true },
+    });
   });
 
   ipcRenderer.on("fromMain", async (event, payload) => {
@@ -110,6 +114,8 @@ window.onload = () => {
         const currentVideo = await getCurrentReelAsync();
         if (!currentVideo) console.warn("No video playing...");
         scrollToNextReel();
+        break;
+      case "req:load-overlay":
         break;
     }
   });

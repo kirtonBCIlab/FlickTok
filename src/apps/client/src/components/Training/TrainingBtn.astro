@@ -13,7 +13,10 @@ const { ...props } = Astro.props;
     constructor() {
       super();
 
-      this.classList.add("btn", "btn-neutral");
+      this.classList.add("btn", "btn-neutral", "btn-disabled");
+
+      if (globalStore.ui.videoState.isPlaying)
+        this.classList.remove("btn-disabled");
 
       globalStore.ui.trainingBtn.state = "running";
 
@@ -54,9 +57,19 @@ const { ...props } = Astro.props;
 
     connectedCallback() {
       this.addEventListener("click", this.handleClick);
+
+      this.videoPlayingListener = subscribeKey(
+        globalStore.ui.videoState,
+        "isPlaying",
+        (v) => {
+          if (v) this.classList.remove("btn-disabled");
+          if (!v) this.classList.add("btn-disabled");
+        }
+      );
     }
 
     disconnectedCallback() {
+      this.videoPlayingListener(); // unsubscribe on element removal
       this.trainingStateListener(); // unsubscribe on element removal
       // this.removeEventListener("click", this.handleClick);
     }
