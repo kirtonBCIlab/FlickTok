@@ -57,7 +57,7 @@ app.on("ready", () => {
 subscribeKey(ctx, "serversLoaded", (v) => {
   if (!v) return;
 
-  win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  // win.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
   win.loadURL(clientURL.replace("0.0.0.0", "localhost")); // client loads at http://localhost:8001 by default
 
@@ -81,7 +81,7 @@ subscribeKey(ctx, "serversLoaded", (v) => {
     clientURL.replace("0.0.0.0", "localhost") + "/overlay"
   ); // overlay loads at http://localhost:8001/overlay by default
   overlayView.setVisible(false); // hide the overlay view until needed
-  overlayView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+  // overlayView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
 
   win.once("ready-to-show", () => win.show());
   win.on("closed", () => {
@@ -161,7 +161,7 @@ const loadSocialMedia = (event, payload) => {
       x: win.getContentBounds().width * 0.1,
       y: win.getContentBounds().height * 0.112,
     });
-    smView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+    // smView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
   }
 };
 
