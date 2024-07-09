@@ -181,28 +181,34 @@ class FlickTokModel:
         # ask Bessy for predicitons.  It will stay in the action state until Bessy predicts the
         # action label.  Bessy provides predictions via the prediction_complete signal which
         # is processed by by __process_prediction() below
-        match self.__prediction_state:
-            case PredictionState.Rest:
-                await self.__send_prediction_status()
-                self.__prediction_state = PredictionState.Action
-                await self.start_async_fn_with_delay(
-                    self.__perform_prediction_step, self.rest_seconds
-                )
-                # self.start_fn_with_delay(
-                #     self.__perform_prediction_step, self.rest_seconds
-                # )
-                # QTimer.singleShot(self.rest_seconds * 1000, self.__perform_prediction_step)
+        while True:
+            match self.__prediction_state:
+                case PredictionState.Rest:
+                    await self.__send_prediction_status()
+                    self.__prediction_state = PredictionState.Action
+                    await asyncio.sleep(self.rest_seconds)
+                    # await self.start_async_fn_with_delay(
+                    #     self.__perform_prediction_step, self.rest_seconds
+                    # )
+                    # self.start_fn_with_delay(
+                    #     self.__perform_prediction_step, self.rest_seconds
+                    # )
+                    # QTimer.singleShot(self.rest_seconds * 1000, self.__perform_prediction_step)
 
-            case PredictionState.Action:
-                await self.__send_prediction_status()
-                self.__bessy.make_prediction(self.prediction_seconds)
-                await self.start_async_fn_with_delay(
-                    self.__perform_prediction_step, self.action_seconds
-                )
-                # self.start_fn_with_delay(
-                #     self.__perform_prediction_step, self.action_seconds
-                # )
-                # QTimer.singleShot(self.action_seconds * 1000, self.__perform_prediction_step)
+                case PredictionState.Action:
+                    await self.__send_prediction_status()
+                    self.__bessy.make_prediction(self.prediction_seconds)
+                    await asyncio.sleep(self.action_seconds)
+                    # await self.start_async_fn_with_delay(
+                    #     self.__perform_prediction_step, self.action_seconds
+                    # )
+                    # self.start_fn_with_delay(
+                    #     self.__perform_prediction_step, self.action_seconds
+                    # )
+                    # QTimer.singleShot(self.action_seconds * 1000, self.__perform_prediction_step)
+
+                case PredictionState.Stop:
+                    break
 
     async def __process_prediction(self, label: int, probabilities: list):
         if label == TrainingLabels.Action.value:
