@@ -4,6 +4,7 @@ import SetupHeader from "../components/Setup/SetupHeader.astro";
 import ConnectionLostRedirect from "../components/ConnectionLostModal/ConnectionLostRedirect.astro";
 import ThemeSelector from "../components/Settings/ThemeSelector";
 import SocialMediaSelector from "../components/Settings/SocialMediaSelector";
+import MovementSelector from "../components/Settings/MovementSelector";
 ---
 
 <PrototypeLayout title="Settings">
@@ -15,6 +16,7 @@ import SocialMediaSelector from "../components/Settings/SocialMediaSelector";
   >
     <ThemeSelector client:only="react" />
     <SocialMediaSelector client:only="react" />
+    <MovementSelector client:only="react" />
   </div>
 
   <div class="flex p-3" slot="footer">

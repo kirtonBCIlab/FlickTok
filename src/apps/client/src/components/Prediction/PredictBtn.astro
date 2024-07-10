@@ -6,12 +6,16 @@ const { ...props } = Astro.props;
 
 <script>
   import globalStore from "/src/stores/global.store.js";
+  import { subscribeKey } from "valtio/utils";
 
   class PredictBtn extends HTMLElement {
     constructor() {
       super();
 
-      this.classList.add("btn", "btn-neutral");
+      this.classList.add("btn", "btn-neutral", "btn-disabled");
+
+      if (globalStore.ui.videoState.isPlaying)
+        this.classList.remove("btn-disabled");
 
       globalStore.ui.predictionBtn.state = "running";
       // globalStore.ui.predictionBtn.state =
@@ -45,6 +49,21 @@ const { ...props } = Astro.props;
 
     connectedCallback() {
       this.addEventListener("click", this.handleClick);
+
+      // @ts-ignore
+      this.videoPlayingListener = subscribeKey(
+        globalStore.ui.videoState,
+        "isPlaying",
+        (v) => {
+          if (v) this.classList.remove("btn-disabled");
+          if (!v) this.classList.add("btn-disabled");
+        }
+      );
+    }
+
+    disconnectedCallback() {
+      // @ts-ignore
+      this.videoPlayingListener(); // unsubscribe on element removal
     }
   }
 

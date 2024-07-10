@@ -1,27 +1,11 @@
 ---
+import SocialMediaScreen from "/src/components/Common/SocialMediaScreen.astro";
 const { ...props } = Astro.props;
 ---
 
 <prediction-screen {...props}></prediction-screen>
+<SocialMediaScreen />
 
-<script type="module">
-  import globalStore from "/src/stores/global.store.js";
-
-  const loadSocialMedia = () => {
-    // @ts-ignore
-    window.api.send("toMain", {
-      id: "req:load-social-media",
-      data: {
-        socialMediaURL:
-          globalStore.settings.options.socialMedia[
-            globalStore.settings.selected.socialMedia
-          ].url,
-      },
-    });
-  };
-
-  if (typeof window.api !== "undefined") loadSocialMedia();
-</script>
 <script>
   // @ts-nocheck
   import globalStore from "/src/stores/global.store.js";
@@ -60,8 +44,20 @@ const { ...props } = Astro.props;
         ]
       }`;
 
-      // Set prediction screen header icon image based on state
-      predictionStateIcon.src = `/images/prediction/${globalStore.ui.predictionState.icon[globalStore.ui.predictionState.state]}.png`;
+      // Set prediction screen header icon image based on state and selected movement
+      const movementSelected = globalStore.settings.selected.movement;
+      const predictionState = globalStore.ui.predictionState.state;
+      predictionStateIcon.src = `/images/${globalStore.ui.predictionState.icon[movementSelected][predictionState]}.png`;
+
+      // Send `req:load-load-overlay` message to main process
+      if (window.api) {
+        window.api.send("toMain", {
+          id: "req:load-overlay",
+          data: {
+            imgSrc: `/images/${globalStore.ui.predictionState.celebrate[predictionState]}.png`,
+          },
+        });
+      }
     }
 
     setBgColor() {
@@ -81,6 +77,15 @@ const { ...props } = Astro.props;
 
     disconnectedCallback() {
       this.predictionStateListener(); // unsubscribe on element removal
+
+      // TODO: Check if this is needed / okay
+      // Stop predictions when the prediction screen is closed ? (e.g., when back button is pressed)
+      if (window.api) {
+        window.api.send("toMain", {
+          id: "set-prediction-btn-state",
+          data: "stop",
+        });
+      }
     }
   }
 

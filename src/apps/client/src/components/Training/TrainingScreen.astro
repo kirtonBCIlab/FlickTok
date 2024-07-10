@@ -1,10 +1,11 @@
 ---
+import SocialMediaScreen from "/src/components/Common/SocialMediaScreen.astro";
 const { ...props } = Astro.props;
 ---
 
-<training-screen {...props}>
-  <img id="training-state-icon" src="" />
-</training-screen>
+<training-screen {...props}></training-screen>
+<SocialMediaScreen />
+
 <script>
   // @ts-nocheck
   import globalStore from "/src/stores/global.store.js";
@@ -37,8 +38,21 @@ const { ...props } = Astro.props;
         globalStore.ui.trainingState.text[globalStore.ui.trainingState.state]
       } ${["rest", "action"].includes(globalStore.ui.trainingState.state) ? globalStore.ui.trainingState.trialCount : ""}`;
 
-      // Set training icon image based on state
-      trainingStateIcon.src = `/images/training/${globalStore.ui.trainingState.icon[globalStore.ui.trainingState.state]}.png`;
+      // Set training icon image based on state and selected movement
+      const movementSelected = globalStore.settings.selected.movement;
+      const trainingState = globalStore.ui.trainingState.state;
+      trainingStateIcon.src = `/images/${globalStore.ui.trainingState.icon[movementSelected][trainingState]}.png`;
+
+      // Send `req:load-celebration-overlay` message to main process
+      // @ts-ignore
+      if (window.api) {
+        window.api.send("toMain", {
+          id: "req:load-overlay",
+          data: {
+            imgSrc: `/images/${globalStore.ui.trainingState.celebrate[trainingState]}.png`,
+          },
+        });
+      }
     }
 
     setBgColor() {

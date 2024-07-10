@@ -58,7 +58,10 @@ const { title, description, class: className, ...props } = Astro.props;
           new URL(window.location.href).pathname.slice(1) || "index";
         window.api.send("toMain", {
           id: "info:navigated-to",
-          data: { url: window.location.href },
+          data: {
+            referrer: document.referrer,
+            url: window.location.href,
+          },
         });
       });
     </script>
