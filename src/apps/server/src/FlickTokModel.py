@@ -54,7 +54,7 @@ class FlickTokModel:
         self.preroll_seconds = 1
         self.rest_seconds = 4
         self.action_seconds = 4
-        self.number_of_trials = 15
+        self.number_of_trials = 3
         self.prediction_seconds = 2
 
         self.__initialize_eeg_scanning()
