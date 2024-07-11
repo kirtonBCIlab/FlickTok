@@ -54,8 +54,8 @@ class FlickTokModel:
         self.preroll_seconds = 1
         self.rest_seconds = 4
         self.action_seconds = 4
-        self.number_of_trials = 5
-        self.prediction_seconds = 1
+        self.number_of_trials = 15
+        self.prediction_seconds = 2
 
         self.__initialize_eeg_scanning()
         self.__initialize_fes_device()
@@ -186,7 +186,7 @@ class FlickTokModel:
                 case PredictionState.Rest:
                     await self.__send_prediction_status()
                     self.__prediction_state = PredictionState.Action
-                    await asyncio.sleep(self.rest_seconds + 3) #wait 4 seconds of
+                    await asyncio.sleep(3) #wait 4 seconds of
                     # await self.start_async_fn_with_delay(
                     #     self.__perform_prediction_step, self.rest_seconds
                     # )
@@ -225,7 +225,8 @@ class FlickTokModel:
             console.log("[green]one second on[/green]")
             
             # put this here so it changes to rest/red background
-            # self.__prediction_state = PredictionState.Rest
+            self.__prediction_state = PredictionState.Rest
+            await self.__send_prediction_status()
 
             await asyncio.sleep(1)
             console.log("[green]two seconds on[/green]")
@@ -243,7 +244,7 @@ class FlickTokModel:
             await self.perform_fes_swipe()
             console.log("[green]should be turned off[/green]")
 
-            self.__prediction_state = PredictionState.Rest
+            #self.__prediction_state = PredictionState.Rest
 
     async def __send_prediction_status(self):
         # self.prediction_status_changed.emit(self.__prediction_state)
