@@ -52,9 +52,9 @@ class FlickTokModel:
         # settings
         self.eeg_scan_seconds = 5
         self.preroll_seconds = 1
-        self.rest_seconds = 2
-        self.action_seconds = 2
-        self.number_of_trials = 3
+        self.rest_seconds = 4
+        self.action_seconds = 4
+        self.number_of_trials = 5
         self.prediction_seconds = 1
 
         self.__initialize_eeg_scanning()
@@ -186,7 +186,7 @@ class FlickTokModel:
                 case PredictionState.Rest:
                     await self.__send_prediction_status()
                     self.__prediction_state = PredictionState.Action
-                    await asyncio.sleep(self.rest_seconds)
+                    await asyncio.sleep(self.rest_seconds + 3) #wait 4 seconds of
                     # await self.start_async_fn_with_delay(
                     #     self.__perform_prediction_step, self.rest_seconds
                     # )
@@ -198,7 +198,7 @@ class FlickTokModel:
                 case PredictionState.Action:
                     await self.__send_prediction_status()
                     self.__bessy.make_prediction(self.prediction_seconds)
-                    await asyncio.sleep(self.action_seconds)
+                    await asyncio.sleep(7)
                     # await self.start_async_fn_with_delay(
                     #     self.__perform_prediction_step, self.action_seconds
                     # )
@@ -215,9 +215,34 @@ class FlickTokModel:
             # self.action_detected.emit(True)
             # self.store.emit("action_detected", True)
             await self.perform_fes_swipe()
+            console.log("[green]should be turned on[/green]")
             await self.sio.emit(
                 "fromPython", {"id": "action-detected", "data": {"value": True}}
             )
+
+            # wait x seconds and then swipe again
+            await asyncio.sleep(1)
+            console.log("[green]one second on[/green]")
+            
+            # put this here so it changes to rest/red background
+            # self.__prediction_state = PredictionState.Rest
+
+            await asyncio.sleep(1)
+            console.log("[green]two seconds on[/green]")
+            await asyncio.sleep(1)
+            console.log("[green]three seconds on[/green]")
+            await asyncio.sleep(1)
+            console.log("[green]four seconds on[/green]")
+            await asyncio.sleep(1)
+            console.log("[green]five seconds on[/green]")
+            await asyncio.sleep(1)
+            console.log("[green]six seconds on[/green]")
+            await asyncio.sleep(1)
+            console.log("[green]seven seconds on[/green]")
+
+            await self.perform_fes_swipe()
+            console.log("[green]should be turned off[/green]")
+
             self.__prediction_state = PredictionState.Rest
 
     async def __send_prediction_status(self):

@@ -46,6 +46,7 @@ class BessyOutput(Messenger):
                 # self.store.set("trial_complete", label)
                 # self.trial_complete.emit(label)
 
+    # HERE IS WHERE PROCESS PREDICTION IS CALLED
     def prediction(self, prediction: Prediction):
         """Implements Messenger.prediction()"""
         # Prediction supports multiple predictions, organized as follows:
