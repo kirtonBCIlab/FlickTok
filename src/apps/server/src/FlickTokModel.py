@@ -52,10 +52,11 @@ class FlickTokModel:
         # settings
         self.eeg_scan_seconds = 5
         self.preroll_seconds = 1
-        self.rest_seconds = 7
-        self.action_seconds = 2
-        self.number_of_trials = 25
+        self.rest_seconds = 4
+        self.action_seconds = 4
+        self.number_of_trials = 20
         self.prediction_seconds = 1
+        self.prediction_rest_seconds = 7
 
         self.__initialize_eeg_scanning()
         self.__initialize_fes_device()
@@ -186,7 +187,7 @@ class FlickTokModel:
                 case PredictionState.Rest:
                     await self.__send_prediction_status()
                     self.__prediction_state = PredictionState.Action
-                    await asyncio.sleep(self.rest_seconds)
+                    await asyncio.sleep(self.prediction_rest_seconds)
                     # await self.start_async_fn_with_delay(
                     #     self.__perform_prediction_step, self.rest_seconds
                     # )
