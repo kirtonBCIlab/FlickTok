@@ -138,11 +138,26 @@ class FlickTokModel:
                     self.__bessy.train_classifier()
 
             case TrainingState.Action:
-                await self.__send_training_status()
-                self.__bessy.mark_trial(
-                    TrainingLabels.Action.value, self.action_seconds
-                )
-                self.__training_state = TrainingState.Rest
+                if self.action_seconds > self.prediction_seconds:
+                    #We need to break up the number of action seconds into multiple calls.
+                    # This should match the length of the self.prediction_seconds
+                    
+
+                    return
+                elif self.prediction_seconds > self.action_seconds:
+
+                    return
+                elif self.action_seconds == self.prediction_seconds:
+                    await self.__send_training_status()
+                    self.__bessy.mark_trial(
+                        TrainingLabels.Action.value, self.action_seconds
+                    )
+                    self.__training_state = TrainingState.Rest
+                    return
+                else:
+                    console.log("[red]TrainingState.Action Error[/red]")
+                    return
+
 
     async def __send_training_status(self):
         status = TrainingStatus(self.__training_state, self.__trial_count)
@@ -162,6 +177,21 @@ class FlickTokModel:
 
     # prediction_status_changed = Signal(PredictionState)
     # action_detected = Signal(bool)
+
+    async def __send_training_status_unequal_lengths(self,sub_trial_count):
+        status = TrainingStatus(self.__training_state, self.__trial_count,sub_trial_count)
+        console.log("[purple]set-training-status[/purple]")
+        await self.sio.emit(
+            "fromPython",
+            {
+                "id": "set-training-status",
+                "data": {
+                    "state": status.state.name.lower(),
+                    "trialCount": status.trials,
+                    "subtrialCount": sub_trial_count,
+                },
+            },
+        )
 
     async def start_predicting(self):
         # Kick off state machine that starts prediction sequence
