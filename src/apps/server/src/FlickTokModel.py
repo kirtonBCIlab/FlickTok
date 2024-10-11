@@ -50,7 +50,7 @@ class FlickTokModel:
         self.sio = sio
 
         # settings
-        self.eeg_scan_seconds = 5
+        self.eeg_scan_seconds = 20
         self.preroll_seconds = 1
         self.rest_seconds = 4
         self.action_seconds = 4
@@ -62,20 +62,20 @@ class FlickTokModel:
         self.__initialize_fes_device()
         self.__initialize_bessy()
 
-    def __check_for_eeg_streams(self):
-        # streams = resolve_byprop("type", "EEG", 0, 0.1)
-        streams = self.__eeg_stream_resolver.results()
-        self.eeg_stream_is_available = len(streams) > 0
-        self.store.set("eeg_stream_is_available", self.eeg_stream_is_available)
-        # Restart the timer for continuous checking
-        self.__initialize_eeg_scanning()
-
     def __initialize_eeg_scanning(self):
         self.__eeg_stream_resolver = ContinuousResolver("type", "EEG")
         self.eeg_scan_timer = threading.Timer(
             self.eeg_scan_seconds, self.__check_for_eeg_streams
         )
         self.eeg_scan_timer.start()
+
+    def __check_for_eeg_streams(self):
+        # streams = resolve_byprop("type", "EEG", 0, 0.1)
+        streams = self.__eeg_stream_resolver.results()
+        self.eeg_stream_is_available = len(streams) > 0
+        self.store.set("eeg_stream_is_available", self.eeg_stream_is_available)
+        # Restart the timer for continuous checking. Removing this for now, to stop the recursion error.
+        # self.__initialize_eeg_scanning()
 
     def __initialize_fes_device(self):
         self.__fes_device = FesDevice()
