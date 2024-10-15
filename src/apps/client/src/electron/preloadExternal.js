@@ -100,10 +100,10 @@ window.onload = () => {
   getCurrentReelAsync().then(() => {
     window.scrollTo(0, 0);
     document.body.scrollIntoView();
-    ipcRenderer.send("toMain", {
-      id: "info:video-playing",
-      data: { value: true },
-    });
+    // ipcRenderer.send("toMain", {
+    //   id: "info:video-playing",
+    //   data: { value: true },
+    // });
   });
 
   ipcRenderer.on("fromMain", async (event, payload) => {
