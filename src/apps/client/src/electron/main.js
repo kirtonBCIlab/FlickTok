@@ -78,7 +78,7 @@ subscribeKey(ctx, "serversLoaded", (v) => {
     y: 0 + 96 / 2 + 72 / 2 + 10,
   });
   overlayView.webContents.loadURL(
-    clientURL.replace("0.0.0.0", "localhost") + "/overlay"
+    clientURL.replace("0.0.0.0", "localhost") + "/overlay",
   ); // overlay loads at http://localhost:8001/overlay by default
   overlayView.setVisible(false); // hide the overlay view until needed
   // overlayView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
@@ -91,7 +91,7 @@ subscribeKey(ctx, "serversLoaded", (v) => {
 
 // electron - general window events
 app.on("window-all-closed", () =>
-  process.platform !== "darwin" ? app.quit() : null
+  process.platform !== "darwin" ? app.quit() : null,
 );
 app.on("activate", () => (win === null ? createWindow() : null));
 
@@ -110,9 +110,9 @@ ipcMain.on("toMain", (event, payload) => {
     case "req:load-overlay":
       loadOverlay(event, payload);
       break;
-    case "info:video-playing":
-      informVideoPlaying(event, payload);
-      break;
+    // case "info:video-playing":
+    //   informVideoPlaying(event, payload);
+    //   break;
     default:
       sio.emit(id, data);
       event.sender.send("fromMain", {
@@ -172,10 +172,10 @@ const unloadSocialMedia = (event, payload) => {
     win.contentView.removeChildView(smView);
     smView = null;
     overlayView.setVisible(false);
-    informVideoPlaying(event, {
-      id: "info:video-playing",
-      data: { value: false },
-    });
+    // informVideoPlaying(event, {
+    //   id: "info:video-playing",
+    //   data: { value: false },
+    // });
   }
 };
 
@@ -194,10 +194,10 @@ const loadOverlay = (event, payload) => {
   }
 };
 
-const informVideoPlaying = (event, payload) => {
-  const { id, data } = payload;
-  win.webContents.send("fromMain", {
-    id: "info:video-playing",
-    data: { value: data.value },
-  });
-};
+// const informVideoPlaying = (event, payload) => {
+//   const { id, data } = payload;
+//   win.webContents.send("fromMain", {
+//     id: "info:video-playing",
+//     data: { value: data.value },
+//   });
+// };
