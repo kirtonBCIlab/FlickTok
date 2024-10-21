@@ -31,7 +31,8 @@ let globalStore = proxy({
   },
   ui: {
     videoState: {
-      isPlaying: false,
+      // isPlaying: false,
+      isPlaying: true,
     },
 
     trainingBtn: {
@@ -181,7 +182,7 @@ globalStore.__fns.initialize = () => {
   }
   if (localStorage.getItem("selected-settings")) {
     globalStore.settings.selected = JSON.parse(
-      localStorage.getItem("selected-settings")
+      localStorage.getItem("selected-settings"),
     );
   }
 };
@@ -196,7 +197,7 @@ globalStore.__fns.subscribe((v) => {
   if (["settings", "selected"].some((k) => v[0][1].includes(k))) {
     localStorage.setItem(
       "selected-settings",
-      JSON.stringify(globalStore.settings.selected)
+      JSON.stringify(globalStore.settings.selected),
     );
   }
 });
@@ -224,9 +225,9 @@ if (window.api) {
       case "py:action-detected":
         globalStore.ui.predictionState.state = "actionDetected";
         break;
-      case "info:video-playing":
-        globalStore.ui.videoState.isPlaying = data.value;
-        break;
+      // case "info:video-playing":
+      //   globalStore.ui.videoState.isPlaying = data.value;
+      //   break;
     }
   });
 }
