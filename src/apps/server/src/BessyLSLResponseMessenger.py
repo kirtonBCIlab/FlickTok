@@ -2,7 +2,7 @@
 from pylsl import StreamInfo, StreamOutlet
 
 
-class BessyLSLMessenger:
+class BessyLSLResponseMessenger:
     """BessyLSLMessenger is a Messenger object that sends markers to LSL
     instead of the console.
 
@@ -12,7 +12,7 @@ class BessyLSLMessenger:
         # super().__init__()
         try:
             info = StreamInfo(
-                name="Python_LSL_Messenger",
+                name="Python_LSL_Response_Messenger",
                 type="LSL_Marker_Strings",
                 channel_count=1,
                 nominal_srate=0,
