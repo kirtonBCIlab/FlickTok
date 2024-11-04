@@ -3,6 +3,8 @@ from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
 from .utils.helpers import console
+from .BessyLSLResponseMessenger import BessyLSLResponseMessenger
+from pylsl import local_clock
 
 
 class BessyOutput(Messenger):
@@ -17,6 +19,7 @@ class BessyOutput(Messenger):
         self.store = store
         self.perform_training_step = perform_training_step
         self.process_prediction = process_prediction
+        self.lsl_response_messenger = BessyLSLResponseMessenger()
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
     # bessy_ping_received = Signal(int)
@@ -48,6 +51,13 @@ class BessyOutput(Messenger):
 
     def prediction(self, prediction: Prediction):
         """Implements Messenger.prediction()"""
+
+
+        prediction_string = str(prediction.labels) + str(prediction.probabilities)
+        print(f"Prediction: {prediction_string}")
+        #Make a string of lables and probabilities
+        #self.lsl_messenger.send_markers([[prediction_string]],[local_clock])
+
         # Prediction supports multiple predictions, organized as follows:
         # labels: list[int]               <--- predicted class labels
         # predictions: list[list[float]]  <--- probabilities of labels (one list per predicion)
@@ -56,6 +66,7 @@ class BessyOutput(Messenger):
             # self.store.set("prediction_complete", (int(label), probabilities))
             try:
                 asyncio.create_task(self.process_prediction(label, probabilities))
+                asyncio.create_task(self.lsl_response_messenger.send_markers([[prediction_string]],[local_clock]))
                 # asyncio.run(self.process_prediction(label, probabilities))
             except ValueError:
                 # TODO - double check this; process_prediction(label, probabilities) doesn't always return a coroutine?
