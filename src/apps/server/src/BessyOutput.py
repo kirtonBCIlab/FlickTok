@@ -3,8 +3,6 @@ from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
 from .utils.helpers import console
-from .BessyLSLResponseMessenger import BessyLSLResponseMessenger
-from pylsl import local_clock
 
 
 class BessyOutput(Messenger):
@@ -19,7 +17,6 @@ class BessyOutput(Messenger):
         self.store = store
         self.perform_training_step = perform_training_step
         self.process_prediction = process_prediction
-        self.lsl_messenger = BessyLSLResponseMessenger()
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
     # bessy_ping_received = Signal(int)
@@ -54,15 +51,6 @@ class BessyOutput(Messenger):
         # Prediction supports multiple predictions, organized as follows:
         # labels: list[int]               <--- predicted class labels
         # predictions: list[list[float]]  <--- probabilities of labels (one list per predicion)
-
-        # Send labels, predictions to BessyLSLMessenger
-        prediction_string = str(prediction.labels) + str(prediction.probabilities)
-        print(f"Prediction: {prediction_string}")
-
-        # Make a string of labels and probabilities
-        # labels = ",".join([str(label) for label in prediction.labels])
-        self.lsl_messenger.send_markers([[prediction_string]], [local_clock()])
-
         for label, probabilities in zip(prediction.labels, prediction.probabilities):
             # self.prediction_complete.emit(int(label), probabilities)
             # self.store.set("prediction_complete", (int(label), probabilities))
