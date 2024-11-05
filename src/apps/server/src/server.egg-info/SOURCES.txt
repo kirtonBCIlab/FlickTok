@@ -2,6 +2,7 @@ pyproject.toml
 src/Bessy.py
 src/BessyInput.py
 src/BessyLSLMessenger.py
+src/BessyLSLResponseMessenger.py
 src/BessyOutput.py
 src/EmotivEegSource.py
 src/FesDevice.py
