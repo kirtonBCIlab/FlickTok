@@ -182,7 +182,7 @@ class FlickTokModel:
         # ask Bessy for predicitons.  It will stay in the action state until Bessy predicts the
         # action label.  Bessy provides predictions via the prediction_complete signal which
         # is processed by by __process_prediction() below
-        while self.__prediction_state != PredictionState.Stop:
+        while True:
             match self.__prediction_state:
                 case PredictionState.Rest:
                     await self.__send_prediction_status()
