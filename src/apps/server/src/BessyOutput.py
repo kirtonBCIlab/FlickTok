@@ -56,7 +56,7 @@ class BessyOutput(Messenger):
         # predictions: list[list[float]]  <--- probabilities of labels (one list per predicion)
 
         # Send labels, predictions to BessyLSLMessenger
-        prediction_string = str(prediction.labels) + str(prediction.probabilities)
+        prediction_string = f"Labels: {prediction.labels}, Probabilities: {prediction.probabilities}"
         print(f"Prediction: {prediction_string}")
 
         # Make a string of labels and probabilities
@@ -67,8 +67,14 @@ class BessyOutput(Messenger):
             # self.prediction_complete.emit(int(label), probabilities)
             # self.store.set("prediction_complete", (int(label), probabilities))
             try:
-                asyncio.create_task(self.process_prediction(label, probabilities))
+                if asyncio.iscoroutinefunction(self.process_prediction):
+                    asyncio.create_task(self.process_prediction(label, probabilities))
+                else:
+                    self.process_prediction(label, probabilities)
                 # asyncio.run(self.process_prediction(label, probabilities))
             except ValueError:
                 # TODO - double check this; process_prediction(label, probabilities) doesn't always return a coroutine?
+                error_message = "process_prediction must be a coroutine"
+                # print the error red
+                console.log(f"[red]{error_message}[/red]")
                 pass

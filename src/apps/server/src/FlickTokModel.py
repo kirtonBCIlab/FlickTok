@@ -182,7 +182,7 @@ class FlickTokModel:
         # ask Bessy for predicitons.  It will stay in the action state until Bessy predicts the
         # action label.  Bessy provides predictions via the prediction_complete signal which
         # is processed by by __process_prediction() below
-        while True:
+        while self.__prediction_state != PredictionState.Stop:
             match self.__prediction_state:
                 case PredictionState.Rest:
                     await self.__send_prediction_status()
@@ -200,6 +200,9 @@ class FlickTokModel:
                     await self.__send_prediction_status()
                     self.__bessy.make_prediction(self.prediction_seconds)
                     await asyncio.sleep(self.action_seconds)
+                    # Let's make sure that the prediction is done before we go back to rest
+                    if self.__prediction_state == PredictionState.Rest:
+                        continue
                     # await self.start_async_fn_with_delay(
                     #     self.__perform_prediction_step, self.action_seconds
                     # )
@@ -210,6 +213,7 @@ class FlickTokModel:
 
                 case PredictionState.Stop:
                     break
+            await asyncio.sleep(0.1)
 
     async def __process_prediction(self, label: int, probabilities: list):
         if label == TrainingLabels.Action.value:
