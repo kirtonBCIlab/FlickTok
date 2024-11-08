@@ -121,6 +121,8 @@ class Bessy:
     async def __bessy_step_loop(self):
         while not self.__stop_event.is_set():
             await self.__bessy_step()
+            # print out bessy step time stamps
+            console.log(f"[green]Bessy step: {time.time()}[/green]")
             await asyncio.sleep(self.__bessy_step_msec / 1000)
 
     def __kill_bessy(self):

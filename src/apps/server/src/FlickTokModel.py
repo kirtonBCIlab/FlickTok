@@ -172,11 +172,6 @@ class FlickTokModel:
         self.__prediction_state = PredictionState.Stop
         await self.__send_prediction_status()
 
-    async def restart_predicting(self):
-        if self.__prediction_state == PredictionState.Action:
-            self.__prediction_state = PredictionState.Rest
-            await self.__send_prediction_status()
-
     async def __perform_prediction_step(self):
         # This state machine transitions from rest to action state where it will periodically
         # ask Bessy for predicitons.  It will stay in the action state until Bessy predicts the
@@ -213,7 +208,6 @@ class FlickTokModel:
 
                 case PredictionState.Stop:
                     break
-            await asyncio.sleep(0.1)
 
     async def __process_prediction(self, label: int, probabilities: list):
         if label == TrainingLabels.Action.value:
