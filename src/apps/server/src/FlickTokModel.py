@@ -194,7 +194,7 @@ class FlickTokModel:
                 case PredictionState.Action:
                     await self.__send_prediction_status()
                     self.__bessy.make_prediction(self.prediction_seconds)
-                    await asyncio.sleep(self.action_seconds)
+                    await asyncio.sleep(self.action_seconds+2)
                     # Let's make sure that the prediction is done before we go back to rest
                     if self.__prediction_state == PredictionState.Rest:
                         continue
