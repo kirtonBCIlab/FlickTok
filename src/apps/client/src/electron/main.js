@@ -156,12 +156,18 @@ const loadSocialMedia = (event, payload) => {
     win.contentView.addChildView(smView, 0); // 0 index -> below overlay view
     smView.webContents.loadURL(socialMediaURL); // https://instagram.com/reels ; https://www.youtube.com/shorts ; etc.
     smView.setBounds({
-      width: win.getContentBounds().width * 0.8,
-      height: win.getContentBounds().height * 0.8,
-      x: win.getContentBounds().width * 0.1,
-      y: win.getContentBounds().height * 0.112,
+      width: 455,
+      height: 693,
+      x: 100.8,
+      y: 148.5,
+      // width: win.getContentBounds().width * 0.7,
+      // height: win.getContentBounds().height * 0.7,
+      // x: win.getContentBounds().width * 0.15,
+      // y: win.getContentBounds().height * 0.15,
     });
-    // smView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
+    console.log(win.getContentBounds().width * 0.15);
+    console.log(win.getContentBounds().height * 0.15);
+    smView.webContents.openDevTools({ mode: "detach" }); // uncomment to open devtools in separate window on start
   }
 };
 
