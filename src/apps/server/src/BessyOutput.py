@@ -3,8 +3,6 @@ from bci_essentials.io.messenger import Messenger
 from bci_essentials.classification.generic_classifier import Prediction
 
 from .utils.helpers import console
-from .BessyLSLResponseMessenger import BessyLSLResponseMessenger
-from pylsl import local_clock
 
 
 class BessyOutput(Messenger):
@@ -19,7 +17,6 @@ class BessyOutput(Messenger):
         self.store = store
         self.perform_training_step = perform_training_step
         self.process_prediction = process_prediction
-        self.lsl_messenger = BessyLSLResponseMessenger()
 
     # TODO - find a way to have Bessy class emit these instead of bessy.output.signal
     # bessy_ping_received = Signal(int)
